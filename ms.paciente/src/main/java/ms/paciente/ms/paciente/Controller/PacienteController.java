@@ -15,8 +15,8 @@ import java.util.List;
 
 
 @RestController // Indica que retorna JSON automáticamente
-@RequestMapping("/api/v1/pokemones") // Ruta base del controlador
-public class PokemonController {
+@RequestMapping("/api/v1/pacientes") // Ruta base del controlador
+public class PacienteController {
 
 @Autowired
 private  ServicesPaciente pacienteServices;
@@ -25,7 +25,7 @@ private  ServicesPaciente pacienteServices;
         return ResponseEntity.ok(pacienteServices.obtenerTodos());
     }
 
-    //recuerden que la url aqui seria /api/v1/pokemones/1
+    //recuerden que la url aqui seria /api/v1/pacientes/1
    @GetMapping("/{rut}")
     public ResponseEntity<?> obtenerPorRut(@PathVariable String rut) {
             List<ModeloPaciente> paciente = pacienteServices.obtenerPorRut(rut);
