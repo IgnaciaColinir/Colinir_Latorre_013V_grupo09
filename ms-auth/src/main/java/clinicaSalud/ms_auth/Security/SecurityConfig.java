@@ -1,0 +1,27 @@
+package clinicaSalud.ms_auth.Security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            // 1. Desactivamos la protección de formularios web (porque usamos Postman y React/Angular)
+            .csrf(csrf -> csrf.disable())
+            
+            // 2. Le decimos al gorila qué puertas dejar abiertas
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/login").permitAll() // Dejar pasar a todos al Login
+                .anyRequest().authenticated() // Cualquier otra ruta, pedir Token obligatorio
+            );
+            
+        return http.build();
+    }
+}
