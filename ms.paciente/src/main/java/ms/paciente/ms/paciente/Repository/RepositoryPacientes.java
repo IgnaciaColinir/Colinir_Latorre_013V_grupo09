@@ -11,6 +11,31 @@ import ms.paciente.ms.paciente.Model.ModeloPaciente;
 @Repository
 public class RepositoryPacientes {
     private final List<ModeloPaciente> pacienteList = new ArrayList<>();
+     public RepositoryPacientes() {
+        pacienteList.add(ModeloPaciente.builder()
+                .tratamiento("503GL")
+                .rut("20999255-8")
+                .nombre("Fabian")
+                .apellido("Navarro")
+                .direccion("3 poniente 1234")
+                .telefono("974567890")
+                .email("fabian.navarro@example.com")
+                .valorTratamiento(35000)
+
+                .build());
+
+        pacienteList.add(ModeloPaciente.builder()
+                .tratamiento("504GL")
+                .rut("20999256-9")
+                .nombre("Hans")
+                .apellido("Pinilla")
+                .direccion("4 poniente 5678")
+                .telefono("987654321")
+                .email("hans.pinilla@example.com")
+                .valorTratamiento(40000)
+                .build());
+    }
+    
 
     public List<ModeloPaciente> findAll() {
         return pacienteList.stream() // Convierte la lista en stream para poder aplicar operaciones
@@ -23,6 +48,13 @@ public class RepositoryPacientes {
     public List <ModeloPaciente> findByRut(String rut) {
         return pacienteList.stream() // Stream para recorrer la colección 
                 .filter(p -> p.getRut().equals(rut)) // Filtra dejando solo el que coincide con el id
+                .toList();// vuelve a empaquetar todo en una Lista IMPOTANTE AGREGARLO!!!!!
+    }
+
+
+    public List <ModeloPaciente> findByPrevision(String prevision) {
+        return pacienteList.stream() // Stream para recorrer la colección 
+                .filter(p -> p.getPrevision().equals(prevision)) // Filtra dejando solo el que coincide con la previsión
                 .toList();// vuelve a empaquetar todo en una Lista IMPOTANTE AGREGARLO!!!!!
     }
 

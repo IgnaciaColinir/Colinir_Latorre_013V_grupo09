@@ -26,11 +26,19 @@ private  ServicesPaciente pacienteServices;
     }
 
     //recuerden que la url aqui seria /api/v1/pacientes/1
-   @GetMapping("/{rut}")
+   @GetMapping("/rut/{rut}")
     public ResponseEntity<?> obtenerPorRut(@PathVariable String rut) {
             List<ModeloPaciente> paciente = pacienteServices.obtenerPorRut(rut);
             return ResponseEntity.ok(paciente);
     }
+
+    @GetMapping("/prevision/{prevision}")
+    public ResponseEntity<?> obtenerPorPrevision(@PathVariable String prevision) {
+            List<ModeloPaciente> paciente = pacienteServices.obtenerPorPrevision(prevision);
+            return ResponseEntity.ok(paciente);
+    }
+
+
     @PostMapping
     public ResponseEntity<PacienteResponseDTO> guardar(
             @Valid @RequestBody PacienteRequestDTO request
@@ -39,7 +47,7 @@ private  ServicesPaciente pacienteServices;
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
     }
 
-    @PutMapping("/{Rut}")// Endpoint PUT para actualizar
+    @PutMapping("/{rut}")// Endpoint PUT para actualizar
     public ResponseEntity<?> actualizar(@PathVariable String rut, @Valid @RequestBody ModeloPaciente paciente) {
         ModeloPaciente actualizado = pacienteServices.actualizar(rut, paciente);
             return ResponseEntity.ok(actualizado);

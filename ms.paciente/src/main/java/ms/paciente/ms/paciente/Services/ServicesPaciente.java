@@ -33,6 +33,14 @@ public class ServicesPaciente {
         }
     }
     
+    public List <ModeloPaciente> obtenerPorPrevision(String prevision) {
+        try {
+            return pancientesRepository.findByPrevision(prevision);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al buscar paciente: " + e.getMessage());
+        }
+    }
+
     public PacienteResponseDTO guardar(PacienteRequestDTO request) {
 
         ModeloPaciente paciente = ModeloPaciente.builder()
