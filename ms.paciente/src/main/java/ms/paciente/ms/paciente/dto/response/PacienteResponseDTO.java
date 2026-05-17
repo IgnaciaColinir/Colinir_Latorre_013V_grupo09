@@ -15,7 +15,8 @@ public class PacienteResponseDTO {
     private String direccion;
     private String telefono;
     private String email;
-    private int valorTratamiento;
+    private double valorTratamiento;
+    private String prevision;
 
 
 }
