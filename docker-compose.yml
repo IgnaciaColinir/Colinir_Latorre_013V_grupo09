@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  # El motor de base de datos único para toda la clínica
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-clinica
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - clinica-network
+
+  # 1. Microservicio de Autenticación
+  ms-auth:
+    image: openjdk:21-slim
+    container_name: ms-auth
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/clinica_auth?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on:
+      - mysql-db
+    networks:
+      - clinica-network
+
+  # 2. Microservicio de Profesionales
+  ms-profesionales:
+    image: openjdk:21-slim
+    container_name: ms-profesionales
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/clinica_profesionales?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on:
+      - mysql-db
+    networks:
+      - clinica-network
+
+  # 3. Microservicio de Fichas Médicas
+  ms-fichas:
+    image: openjdk:21-slim
+    container_name: ms-fichas
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/clinica_fichas?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on:
+      - mysql-db
+    networks:
+      - clinica-network
+
+  # 4. Microservicio de Inventario
+  ms-inventario:
+    image: openjdk:21-slim
+    container_name: ms-inventario
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/clinica_inventario?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on:
+      - mysql-db
+    networks:
+      - clinica-network
+
+  # 5. Microservicio de Servicios Clínicos
+  ms-servicios:
+    image: openjdk:21-slim
+    container_name: ms-servicios
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/clinica_servicios?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on:
+      - mysql-db
+    networks:
+      - clinica-network
+
+volumes:
+  mysql_data:
+
+networks:
+  clinica-network:
+    driver: bridge
