@@ -1,39 +1,30 @@
 package clinicaSalud.ms_fichas.Controller;
 
-import java.util.List;
-
+import clinicaSalud.ms_fichas.DTO.FichaDTO;
+import clinicaSalud.ms_fichas.Service.FichaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import clinicaSalud.ms_fichas.Model.Ficha;
-import clinicaSalud.ms_fichas.Repository.FichaRepository;
+import java.util.List;
 
 @RestController
 @RequestMapping("/fichas")
 public class FichaController {
 
     @Autowired
-    private FichaRepository fichaRepository;
+    private FichaService service;
 
-    // 1. Crear una nueva ficha médica
     @PostMapping
-    public ResponseEntity<Ficha> crearFicha(@RequestBody Ficha ficha) {
-        Ficha nuevaFicha = fichaRepository.save(ficha);
-        return ResponseEntity.ok(nuevaFicha);
+    public ResponseEntity<FichaDTO> crearFicha(@RequestBody FichaDTO fichaDTO) {
+        return ResponseEntity.ok(service.guardar(fichaDTO));
     }
 
-    // 2. Buscar la ficha de un paciente específico por su RUT
     @GetMapping("/paciente/{rut}")
-    public ResponseEntity<List<Ficha>> obtenerPorRut(@PathVariable String rut) {
-        List<Ficha> fichas = fichaRepository.findByRutPaciente(rut);
-        if(fichas.isEmpty()) {
-            return ResponseEntity.notFound().build(); // Devuelve error 404 si no pilla nada
+    public ResponseEntity<List<FichaDTO>> obtenerPorRut(@PathVariable String rut) {
+        List<FichaDTO> fichas = service.obtenerPorRut(rut);
+        if (fichas.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(fichas);
     }
