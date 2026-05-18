@@ -10,26 +10,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import clinicaSalud.ms_inventario.Model.Insumo;
-import clinicaSalud.ms_inventario.Repository.InsumoRepository;
+import clinicaSalud.ms_inventario.DTO.InsumoDTO;
+import clinicaSalud.ms_inventario.Service.InsumoService;
 
 @RestController
-@RequestMapping("/inventario")
+@RequestMapping("/insumos") // Plural y directo al recurso
 public class InsumoController {
 
     @Autowired
-    private InsumoRepository insumoRepository;
+    private InsumoService service;
 
-    // 1. Endpoint para crear un nuevo insumo 
     @PostMapping
-    public ResponseEntity<Insumo> crearInsumo(@RequestBody Insumo insumo) {
-        Insumo nuevoInsumo = insumoRepository.save(insumo);
-        return ResponseEntity.ok(nuevoInsumo);
+    public ResponseEntity<InsumoDTO> crearInsumo(@RequestBody InsumoDTO insumoDTO) {
+        return ResponseEntity.ok(service.guardar(insumoDTO));
     }
 
-    // 2. Endpoint para ver todo el stock
     @GetMapping
-    public ResponseEntity<List<Insumo>> obtenerTodos() {
-        return ResponseEntity.ok(insumoRepository.findAll());
+    public ResponseEntity<List<InsumoDTO>> obtenerTodos() {
+        return ResponseEntity.ok(service.obtenerTodos());
     }
 }
