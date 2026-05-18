@@ -1,33 +1,40 @@
 package clinicaSalud.ms_servicios.Controller;
 
-import clinicaSalud.ms_servicios.Model.Servicio;
-import clinicaSalud.ms_servicios.Service.ServicioService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import clinicaSalud.ms_servicios.DTO.ServicioDTO;
+import clinicaSalud.ms_servicios.Service.ServicioService;
+
+// aca arreglé lo que dijo el profe de catalogo porque ahora ta el servicio y el DTO
+
 @RestController
-@RequestMapping("/catalogo") 
+@RequestMapping("/servicios")
 public class ServicioController {
 
-    // Cambiamos el Repository por el Service
     @Autowired
     private ServicioService service; 
 
     @PostMapping
-    public ResponseEntity<Servicio> crear(@RequestBody Servicio servicio) {
-        return ResponseEntity.ok(service.guardar(servicio));
+    public ResponseEntity<ServicioDTO> crear(@RequestBody ServicioDTO servicioDTO) {
+        return ResponseEntity.ok(service.guardar(servicioDTO));
     }
 
     @GetMapping
-    public ResponseEntity<List<Servicio>> listar() {
+    public ResponseEntity<List<ServicioDTO>> listar() {
         return ResponseEntity.ok(service.listarTodo());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Servicio> obtener(@PathVariable Long id) {
+    public ResponseEntity<ServicioDTO> obtener(@PathVariable Long id) {
         return ResponseEntity.ok(service.obtenerPorId(id));
     }
 }

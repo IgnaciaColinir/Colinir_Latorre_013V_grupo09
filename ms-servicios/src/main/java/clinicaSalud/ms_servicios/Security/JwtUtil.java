@@ -1,23 +1,23 @@
 package clinicaSalud.ms_servicios.Security;
 
+import java.security.Key;
+
+import org.springframework.stereotype.Component;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Component;
-
-import java.security.Key;
 
 @Component
 public class JwtUtil {
 
-    // OJO: Esta misma clave secreta tiene muchos caracteres.. 
-    private final String SECRET_KEY = "ClinicaSaludSecretKeyParaJsonWebTokenMuySegura123!";
+    // AHORA SÍ: Esta es la misma llave exacta que genera el ms-auth
+    private final String SECRET_KEY = "MiClaveSuperSecretaParaLaClinicaDelDuocQueTieneQueSerLargaParaQueSeaSegura123456789";
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    // Método para revisar si el token es válido
     public boolean validarToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
@@ -27,7 +27,6 @@ public class JwtUtil {
         }
     }
 
-    // Método para sacar el nombre del usuario que viene adentro del token
     public String extraerUsuario(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
