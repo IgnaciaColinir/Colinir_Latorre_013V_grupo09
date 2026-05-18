@@ -2,8 +2,11 @@ package clinicaSalud.ms_profesionales.Services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import clinicaSalud.ms_profesionales.Model.ModeloProfesional;
 import clinicaSalud.ms_profesionales.Repository.RepositoryProfesionales;
 import clinicaSalud.ms_profesionales.dto.request.ProfesionalRequestDTO;
@@ -15,12 +18,37 @@ public class ServicesProfesional {
     @Autowired
     private RepositoryProfesionales profesionalesRepository;
 
-    public List<ModeloProfesional> obtenerTodos() {
-        return profesionalesRepository.findAll();
+    // Método traductor para no repetir código
+    private ProfesionalResponseDTO convertirADTO(ModeloProfesional modelo) {
+        return ProfesionalResponseDTO.builder()
+                .rut(modelo.getRut())
+                .nombre(modelo.getNombre())
+                .apellido(modelo.getApellido())
+                .especialidad(modelo.getEspecialidad())
+                .email(modelo.getEmail())
+                .telefono(modelo.getTelefono())
+                .valorConsulta(modelo.getValorConsulta())
+                .build();
     }
 
-    public Optional<ModeloProfesional> obtenerPorRut(String rut) {
-        return profesionalesRepository.findById(rut);
+    public List<ProfesionalResponseDTO> obtenerTodos() {
+        return profesionalesRepository.findAll().stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
+    }
+
+    public ProfesionalResponseDTO obtenerPorRut(String rut) {
+        Optional<ModeloProfesional> profesional = profesionalesRepository.findById(rut);
+        if (profesional.isEmpty()) {
+            throw new RuntimeException("Error: Profesional no encontrado con el RUT: " + rut);
+        }
+        return convertirADTO(profesional.get());
+    }
+
+    public List<ProfesionalResponseDTO> buscarPorEspecialidad(String especialidad) {
+        return profesionalesRepository.findByEspecialidad(especialidad).stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
     }
     
     public ProfesionalResponseDTO guardar(ProfesionalRequestDTO request) {
@@ -35,19 +63,10 @@ public class ServicesProfesional {
                 .build();
 
         ModeloProfesional guardado = profesionalesRepository.save(profesional);
-
-        return ProfesionalResponseDTO.builder()
-                .rut(guardado.getRut())
-                .nombre(guardado.getNombre())
-                .apellido(guardado.getApellido())
-                .especialidad(guardado.getEspecialidad())
-                .email(guardado.getEmail())
-                .telefono(guardado.getTelefono())
-                .valorConsulta(guardado.getValorConsulta())
-                .build();
+        return convertirADTO(guardado);
     }
     
-    public ModeloProfesional actualizar(String rut, ModeloProfesional profesionalActualizado) {
+    public ProfesionalResponseDTO actualizar(String rut, ProfesionalRequestDTO profesionalActualizado) {
         Optional<ModeloProfesional> existente = profesionalesRepository.findById(rut);
         
         if (existente.isEmpty()) {
@@ -62,18 +81,14 @@ public class ServicesProfesional {
         profesionalOriginal.setTelefono(profesionalActualizado.getTelefono());
         profesionalOriginal.setValorConsulta(profesionalActualizado.getValorConsulta());
         
-        return profesionalesRepository.save(profesionalOriginal);
+        ModeloProfesional guardado = profesionalesRepository.save(profesionalOriginal);
+        return convertirADTO(guardado);
     }
 
-    public boolean eliminar(String rut) {
-        if (profesionalesRepository.existsById(rut)) {
-            profesionalesRepository.deleteById(rut);
-            return true;
+    public void eliminar(String rut) {
+        if (!profesionalesRepository.existsById(rut)) {
+            throw new RuntimeException("Error al eliminar: Profesional no encontrado");
         }
-        return false;
+        profesionalesRepository.deleteById(rut);
     }
-
-    public List<ModeloProfesional> buscarPorEspecialidad(String especialidad) {
-        return profesionalesRepository.findByEspecialidad(especialidad);
-    }       
 }
