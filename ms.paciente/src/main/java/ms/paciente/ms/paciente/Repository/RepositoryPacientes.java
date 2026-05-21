@@ -13,26 +13,22 @@ public class RepositoryPacientes {
     private final List<ModeloPaciente> pacienteList = new ArrayList<>();
      public RepositoryPacientes() {
         pacienteList.add(ModeloPaciente.builder()
-                .tratamiento("503GL")
                 .rut("20999255-8")
                 .nombre("Fabian")
                 .apellido("Navarro")
                 .direccion("3 poniente 1234")
                 .telefono("974567890")
                 .email("fabian.navarro@example.com")
-                .valorTratamiento(35000)
 
                 .build());
 
         pacienteList.add(ModeloPaciente.builder()
-                .tratamiento("504GL")
                 .rut("20999256-9")
                 .nombre("Hans")
                 .apellido("Pinilla")
                 .direccion("4 poniente 5678")
                 .telefono("987654321")
                 .email("hans.pinilla@example.com")
-                .valorTratamiento(40000)
                 .build());
     }
     
@@ -68,27 +64,18 @@ public class RepositoryPacientes {
         return pacienteList.removeIf(p -> p.getRut().equals(rut));
     }
     
-    public List<ModeloPaciente> findbyTratamiento(String tratamiento) {
-        return pacienteList.stream() // convierte la lista a un formato legible por java asincronamente
-                .filter(p -> p.getTratamiento().equalsIgnoreCase(tratamiento)) // Filtra por tratamiento ignorando mayúsculas/minúsculas
-                .toList(); 
-    }
-
     public ModeloPaciente update(String rut, ModeloPaciente pacienteActualizado) {
 
         for (int i = 0; i < pacienteList.size(); i++) {
 
             if (pacienteList.get(i).getRut().equalsIgnoreCase(rut)){
 
-                pacienteList.get(i).setTratamiento(pacienteActualizado.getTratamiento());
                 pacienteList.get(i).setRut(pacienteActualizado.getRut());
                 pacienteList.get(i).setNombre(pacienteActualizado.getNombre());
                 pacienteList.get(i).setApellido(pacienteActualizado.getApellido());
                 pacienteList.get(i).setDireccion(pacienteActualizado.getDireccion());
                 pacienteList.get(i).setTelefono(pacienteActualizado.getTelefono());
                 pacienteList.get(i).setEmail(pacienteActualizado.getEmail());
-                pacienteList.get(i).setValorTratamiento(pacienteActualizado.getValorTratamiento());
-
                 return pacienteList.get(i);
             }
         }    

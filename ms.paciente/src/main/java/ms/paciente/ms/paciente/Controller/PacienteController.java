@@ -58,16 +58,6 @@ private  ServicesPaciente pacienteServices;
         return ResponseEntity.ok("Eliminado");
     }
 
-    @GetMapping("/tratamiento/{tratamiento}")// Endpoint GET por tipo
-    public ResponseEntity<?> buscarPorTratamento(@PathVariable String tratamiento) {
-        try {
-            return ResponseEntity.ok(pacienteServices.buscarPorTratamiento(tratamiento));
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al buscar por tratamiento: " + e.getMessage());
-        }
-    }
 
     
 }

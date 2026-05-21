@@ -12,6 +12,7 @@ public class ConsultasResponseDTO {
     private String nomMedico;
     private String fechaConsulta;
     private String horaConsulta;
-    private String motivoConsulta;
+    private String diagnostico;
     private double valorConsulta;
+    private double valorTratamiento;
 }

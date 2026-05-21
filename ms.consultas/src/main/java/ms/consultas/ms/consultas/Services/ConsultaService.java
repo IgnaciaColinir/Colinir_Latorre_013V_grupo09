@@ -40,8 +40,9 @@ public class ConsultaService {
                 .nomMedico(request.getNomMedico())
                 .fechaConsulta(request.getFechaConsulta())
                 .horaConsulta(request.getHoraConsulta())
-                .motivoConsulta(request.getMotivoConsulta())
+                .diagnostico(request.getDiagnostico())
                 .valorConsulta(request.getValorConsulta())
+                .valorTratamiento(request.getValorTratamiento())
                 .build();
 
         ModeloConsulta guardado = consultaRepository.save(consulta);
@@ -52,8 +53,9 @@ public class ConsultaService {
                 .nomMedico(guardado.getNomMedico())
                 .fechaConsulta(guardado.getFechaConsulta())
                 .horaConsulta(guardado.getHoraConsulta())
-                .motivoConsulta(guardado.getMotivoConsulta())
+                .diagnostico(guardado.getDiagnostico())
                 .valorConsulta(guardado.getValorConsulta())
+                .valorTratamiento(guardado.getValorTratamiento())
                 .build();
     }
     
@@ -97,12 +99,12 @@ public class ConsultaService {
         }
     }
 
-    public List<ModeloConsulta> buscarPorConsulta(String motivoConsulta) {
+    public List<ModeloConsulta> buscarPorDiagnostico(String diagnostico) {
         try {
-            return consultaRepository.findByMotivoConsultas(motivoConsulta);
+            return consultaRepository.findByDiagnostico(diagnostico);
 
         } catch (Exception e) {
-            throw new RuntimeException("Error al buscar por motivo de consulta: " + e.getMessage());
+            throw new RuntimeException("Error al buscar por diagnostico: " + e.getMessage());
         }
     }
 

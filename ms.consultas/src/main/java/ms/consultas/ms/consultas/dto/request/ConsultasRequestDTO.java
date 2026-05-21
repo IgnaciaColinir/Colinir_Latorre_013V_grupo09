@@ -20,8 +20,12 @@ public class ConsultasRequestDTO {
     @NotBlank(message = "La hora de la consulta es obligatoria")
     private String horaConsulta;
 
-    @NotBlank(message = "El motivo de la consulta es obligatorio")
-    private String motivoConsulta;
+    @NotBlank(message = "El diagnostico de la consulta es obligatorio")
+    private String diagnostico;
+
     @Min(value = 0, message = "El valor de la consulta no puede ser negativo")
     private double valorConsulta;
+
+    @Min(value = 0, message = "El valor del tratamiento no puede ser negativo")
+    private double valorTratamiento;
 }
