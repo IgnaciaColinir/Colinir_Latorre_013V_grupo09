@@ -46,27 +46,23 @@ public class ServicesPaciente {
         ModeloPaciente paciente = ModeloPaciente.builder()
 
 
-                .tratamiento(request.getTratamiento())
                 .rut(request.getRut())
                 .nombre(request.getNombre())
                 .apellido(request.getApellido())
                 .direccion(request.getDireccion())
                 .telefono((request.getTelefono()))
                 .email((request.getEmail()))
-                .valorTratamiento((request.getValorTratamiento()))
                 .build();
 
         ModeloPaciente guardado = pancientesRepository.save(paciente);
 
         return PacienteResponseDTO.builder()
-                .tratamiento(guardado.getTratamiento())
                 .rut(guardado.getRut())
                 .nombre(guardado.getNombre())
                 .apellido(guardado.getApellido())
                 .direccion(guardado.getDireccion())
                 .telefono((guardado.getTelefono()))
                 .email((guardado.getEmail()))
-                .valorTratamiento((guardado.getValorTratamiento()))
                 .build();
     }
     
@@ -86,12 +82,5 @@ public class ServicesPaciente {
             }
     }
 
-    public List<ModeloPaciente> buscarPorTratamiento(String tratamiento) {
-        try {
-            return pancientesRepository.findbyTratamiento(tratamiento);
-        } catch (Exception e) {
-            throw new RuntimeException("Error al buscar por tratamiento: " + e.getMessage());
-        }
-    }       
 
 }

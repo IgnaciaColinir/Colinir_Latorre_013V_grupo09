@@ -1,4 +1,4 @@
-package ms.paciente.ms.paciente.security;
+package ms.consultas.ms.consultas.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -82,10 +82,10 @@ private ConsultaService consultaService;
         }
     }
 
-    @GetMapping("consulta/consulta")// Endpoint GET solo consulta
+    @GetMapping("consulta/{diagnostico}")// Endpoint GET solo consulta
     public ResponseEntity<?> buscarPorConsulta(String motivoConsulta) {
         try {
-            return ResponseEntity.ok(consultaService.buscarPorConsulta(motivoConsulta));
+            return ResponseEntity.ok(consultaService.buscarPorDiagnostico(motivoConsulta));
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

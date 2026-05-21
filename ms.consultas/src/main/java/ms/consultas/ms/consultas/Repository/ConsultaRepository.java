@@ -21,8 +21,9 @@ public class ConsultaRepository {
                 .nomMedico("Fabian Navarro")
                 .fechaConsulta("2026-01-01")
                 .horaConsulta("10:00")
-                .motivoConsulta("Chequeo médico")
-
+                .diagnostico("Chequeo médico")
+                .valorConsulta(50000)
+                .valorTratamiento(35000)
                 .build());
 
         consultasList.add(ModeloConsulta.builder()
@@ -31,7 +32,9 @@ public class ConsultaRepository {
                 .nomMedico("Giovanni Roa")
                 .fechaConsulta("2026-03-02")
                 .horaConsulta("11:00")
-                .motivoConsulta("Tratamiento especial")
+                .diagnostico("Tratamiento especial")
+                .valorConsulta(100000)
+                .valorTratamiento(50000)
                 .build());
     }
 
@@ -69,7 +72,9 @@ public class ConsultaRepository {
                 consultasList.get(i).setNomMedico(consultaActualizada.getNomMedico());
                 consultasList.get(i).setFechaConsulta(consultaActualizada.getFechaConsulta());
                 consultasList.get(i).setHoraConsulta(consultaActualizada.getHoraConsulta());
-                consultasList.get(i).setMotivoConsulta(consultaActualizada.getMotivoConsulta());
+                consultasList.get(i).setDiagnostico(consultaActualizada.getDiagnostico());
+                consultasList.get(i).setValorConsulta(consultaActualizada.getValorConsulta());
+                consultasList.get(i).setValorTratamiento(consultaActualizada.getValorTratamiento());
 
                 return consultasList.get(i);
             }
@@ -107,9 +112,9 @@ public class ConsultaRepository {
                 .toList(); //recuerden siempre vovler a transformar el onjeto en una nueva lista
     }
 
-    public List<ModeloConsulta> findByMotivoConsultas(String motivoConsulta) {
+    public List<ModeloConsulta> findByDiagnostico(String diagnostico) {
         return consultasList.stream() // convierte la lista a un formato legible por java asincronamente
-                .filter(p -> p.getMotivoConsulta().equalsIgnoreCase(motivoConsulta)) // Filtra por motivo de consulta ignorando mayúsculas/minúsculas
+                .filter(p -> p.getDiagnostico().equalsIgnoreCase(diagnostico)) // Filtra por diagnostico ignorando mayúsculas/minúsculas
                 .sorted(Comparator.comparing(ModeloConsulta::getId)) // Ordena por id
                 .toList(); //recuerden siempre vovler a transformar el onjeto en una nueva lista
     }
