@@ -12,5 +12,4 @@ public class ProfesionalResponseDTO {
     private String especialidad;
     private String email;
     private String telefono;
-    private int valorConsulta;
 }

@@ -18,7 +18,7 @@ public class ServicesProfesional {
     @Autowired
     private RepositoryProfesionales profesionalesRepository;
 
-    // Método traductor para no repetir código
+    // Método traductor para no repetir código 
     private ProfesionalResponseDTO convertirADTO(ModeloProfesional modelo) {
         return ProfesionalResponseDTO.builder()
                 .rut(modelo.getRut())
@@ -27,7 +27,6 @@ public class ServicesProfesional {
                 .especialidad(modelo.getEspecialidad())
                 .email(modelo.getEmail())
                 .telefono(modelo.getTelefono())
-                .valorConsulta(modelo.getValorConsulta())
                 .build();
     }
 
@@ -59,7 +58,6 @@ public class ServicesProfesional {
                 .especialidad(request.getEspecialidad())
                 .email(request.getEmail())
                 .telefono(request.getTelefono())
-                .valorConsulta(request.getValorConsulta())
                 .build();
 
         ModeloProfesional guardado = profesionalesRepository.save(profesional);
@@ -79,7 +77,6 @@ public class ServicesProfesional {
         profesionalOriginal.setEspecialidad(profesionalActualizado.getEspecialidad());
         profesionalOriginal.setEmail(profesionalActualizado.getEmail());
         profesionalOriginal.setTelefono(profesionalActualizado.getTelefono());
-        profesionalOriginal.setValorConsulta(profesionalActualizado.getValorConsulta());
         
         ModeloProfesional guardado = profesionalesRepository.save(profesionalOriginal);
         return convertirADTO(guardado);

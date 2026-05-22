@@ -3,7 +3,6 @@ package clinicaSalud.ms_profesionales.Model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +35,4 @@ public class ModeloProfesional {
 
     @NotBlank(message = "El teléfono no puede estar vacío")
     private String telefono;
-
-    @Min(value = 0, message = "El valor de la consulta debe ser mayor o igual a cero")
-    private int valorConsulta;
 }

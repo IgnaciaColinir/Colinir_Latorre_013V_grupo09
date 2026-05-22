@@ -26,7 +26,6 @@ public class MsProfesionalesApplication {
                         .especialidad("Medicina general")
                         .email("Khan@clinica.cl")
                         .telefono("+56912345678")
-                        .valorConsulta(50000)
                         .build();
                 repository.save(doc1);
 
@@ -37,7 +36,6 @@ public class MsProfesionalesApplication {
                         .especialidad("Inmunología")
                         .email("cameron@clinica.cl")
                         .telefono("+56987654321")
-                        .valorConsulta(45000)
                         .build();
                 repository.save(doc2);
             }
