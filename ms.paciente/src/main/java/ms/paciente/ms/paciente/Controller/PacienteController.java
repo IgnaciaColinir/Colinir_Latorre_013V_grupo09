@@ -40,10 +40,10 @@ private  ServicesPaciente pacienteServices;
 
 
     @PostMapping
-    public ResponseEntity<PacienteResponseDTO> guardar(
+    public ResponseEntity<PacienteResponseDTO> guardarPaciente(
             @Valid @RequestBody PacienteRequestDTO request
     ) {
-        PacienteResponseDTO nuevo = pacienteServices.guardar(request);
+        PacienteResponseDTO nuevo = pacienteServices.registrarPaciente(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
     }
 

@@ -41,7 +41,23 @@ public class ServicesPaciente {
         }
     }
 
-    public PacienteResponseDTO guardar(PacienteRequestDTO request) {
+    public PacienteResponseDTO registrarPaciente(PacienteRequestDTO request) {
+        
+        ModeloPaciente existente = pancientesRepository.findByRut(request.getRut()).stream().findFirst().orElse(null);
+        
+        if (existente != null) {
+            throw new RuntimeException("El paciente con rut " + request.getRut() + " ya existe");
+        }
+
+        int ageNacimiento = request.getFechaNacimiento().getYear();
+        int ageActual = java.time.LocalDate.now().getYear();
+
+        int edad = ageActual - ageNacimiento;
+
+        if (edad < 15 && (request.getRutTutor() == null || request.getNombreTutor().isBlank())) {
+            throw new RuntimeException("El paciente es menor de edad, se requiere un tutor responsable");
+        }
+
 
         ModeloPaciente paciente = ModeloPaciente.builder()
 
@@ -50,8 +66,12 @@ public class ServicesPaciente {
                 .nombre(request.getNombre())
                 .apellido(request.getApellido())
                 .direccion(request.getDireccion())
+                .fechaNacimiento(request.getFechaNacimiento())
                 .telefono((request.getTelefono()))
                 .email((request.getEmail()))
+                .prevision(request.getPrevision())
+                .rutTutor(request.getRutTutor())
+                .nombreTutor(request.getNombreTutor())
                 .build();
 
         ModeloPaciente guardado = pancientesRepository.save(paciente);
@@ -63,14 +83,19 @@ public class ServicesPaciente {
                 .direccion(guardado.getDireccion())
                 .telefono((guardado.getTelefono()))
                 .email((guardado.getEmail()))
+                .fechaNacimiento(guardado.getFechaNacimiento())
+                .prevision(guardado.getPrevision())
+                .rutTutor(guardado.getRutTutor())
+                .nombreTutor(guardado.getNombreTutor())
                 .build();
     }
     
     public ModeloPaciente actualizar(String rut, ModeloPaciente pacienteActualizado) {
-            try {
+            try { 
+               
                 return pancientesRepository.update(rut, pacienteActualizado);
             } catch (Exception e) {
-                throw new RuntimeException("Error al actualizar paciente: " + e.getMessage());
+                throw new RuntimeException("Error al actualizar paciente (rut no encontrado): " + e.getMessage());
             }
     }
 

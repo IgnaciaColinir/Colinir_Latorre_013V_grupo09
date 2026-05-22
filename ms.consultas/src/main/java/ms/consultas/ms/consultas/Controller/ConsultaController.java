@@ -82,7 +82,7 @@ private ConsultaService consultaService;
         }
     }
 
-    @GetMapping("consulta/{diagnostico}")// Endpoint GET solo consulta
+    @GetMapping("consulta/{diagnostico}")// Endpoint GET solo consulta por diagnostico
     public ResponseEntity<?> buscarPorConsulta(String motivoConsulta) {
         try {
             return ResponseEntity.ok(consultaService.buscarPorDiagnostico(motivoConsulta));
