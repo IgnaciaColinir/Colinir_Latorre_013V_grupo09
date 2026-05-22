@@ -12,8 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ModeloUsuario {
     
-    private int id;
-
+    
     @NotBlank(message = "El campo rut no puede estar vacío")
     private String rut;
 

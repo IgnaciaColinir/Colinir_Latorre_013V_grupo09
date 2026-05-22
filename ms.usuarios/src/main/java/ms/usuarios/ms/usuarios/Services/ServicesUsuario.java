@@ -32,16 +32,35 @@ public class ServicesUsuario {
             throw new RuntimeException("Error al buscar usuario: " + e.getMessage());
         }
     }
-
-    public List <ModeloUsuario> obtenerPorID(int id) {
+    
+      public List <ModeloUsuario> obtenerPorEmail(String email) {
         try {
-            return usuariosRepository.findByID(id);
+            return usuariosRepository.findByEmail(email);
         } catch (Exception e) {
-            throw new RuntimeException("Error al buscar usuario: " + e.getMessage());
+            throw new RuntimeException("Error al buscar email: " + e.getMessage());
         }
     }
+
     
     public UsuarioResponseDTO guardar(UsuarioRequestDTO request) {
+
+        ModeloUsuario existente = usuariosRepository.findByRut(request.getRut()).stream().findFirst().orElse(null);
+
+        if (existente != null) {
+            throw new RuntimeException("El usuario con rut " + request.getRut() + " ya existe");
+        }
+
+        ModeloUsuario emailExistente = usuariosRepository.findByEmail(request.getEmail()).stream().findFirst().orElse(null);
+
+        if (emailExistente != null) {
+            throw new RuntimeException("El email " + request.getEmail() + " ya esta asociado a un usuario");
+        }
+
+        String cargo = request.getCargo().toUpperCase();
+        if (!cargo.equals("ADMINISTRADOR") && !cargo.equals("MEDICO") && !cargo.equals("ADMINISTRATIVO") 
+            && !cargo.equals("CONTABLE")){
+            throw new RuntimeException("Cargo no válido. Debe ser ADMINISTRADOR, MEDICO, ADMINISTRATIVO o CONTABLE");
+        }
 
         ModeloUsuario usuario = ModeloUsuario.builder()
 

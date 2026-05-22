@@ -1,14 +1,12 @@
-package ms.paciente.ms.paciente.dto.response;
+package ms.agenda.agenda.dto.response;
 
+import lombok.Data;
 
 import java.time.LocalDate;
 
-import lombok.Builder;
-import lombok.Data;
-
+// DTO que representa la respuesta del microservicio de pacientes
 @Data
-@Builder
-public class PacienteResponseDTO {
+public class PacienteResponse {
 
     private String tratamiento;
     private String rut;
@@ -21,5 +19,4 @@ public class PacienteResponseDTO {
     private String prevision;
     private String rutTutor;
     private String nombreTutor;
-
 }

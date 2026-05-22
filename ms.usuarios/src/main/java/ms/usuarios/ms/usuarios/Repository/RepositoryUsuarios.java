@@ -11,11 +11,11 @@ import ms.usuarios.ms.usuarios.Model.ModeloUsuario;
 @Repository
 public class RepositoryUsuarios {
     private final List<ModeloUsuario> usuariosList = new ArrayList<>();
-    private int nextId = 1;
+  
 
     public RepositoryUsuarios() {
         usuariosList.add(ModeloUsuario.builder()
-                .id(nextId++)
+             
                 .rut("12345678-9")
                 .nombre("Juan")
                 .apellido("Perez")
@@ -25,7 +25,7 @@ public class RepositoryUsuarios {
                 .build());
 
         usuariosList.add(ModeloUsuario.builder()
-                .id(nextId++)
+                
                 .rut("98765432-1")
                 .nombre("Maria")
                 .apellido("Gonzalez")
@@ -41,7 +41,7 @@ public class RepositoryUsuarios {
 
     public List<ModeloUsuario> findAll() {
         return usuariosList.stream() // Convierte la lista en stream para poder aplicar operaciones
-                .sorted(Comparator.comparing(ModeloUsuario:: getId)) // Ordena por id ascendente
+                .sorted(Comparator.comparing(ModeloUsuario:: getRut)) // Ordena por id ascendente
                 .toList(); // Convierte el stream nuevamente a lista
 
     
@@ -53,11 +53,12 @@ public class RepositoryUsuarios {
                 .toList();// vuelve a empaquetar todo en una Lista IMPOTANTE AGREGARLO!!!!!
     }
 
-    public List <ModeloUsuario> findByID(int id) {
+    public List <ModeloUsuario> findByEmail(String email) {
         return usuariosList.stream() // Stream para recorrer la colección 
-                .filter(p -> p.getId() == id) // Filtra dejando solo el que coincide con el id
+                .filter(p -> p.getEmail().equals(email)) // Filtra dejando solo el que coincide con el email
                 .toList();// vuelve a empaquetar todo en una Lista IMPOTANTE AGREGARLO!!!!!
     }
+
 
 
     public ModeloUsuario save(ModeloUsuario nuevoUsuario) {
@@ -82,7 +83,6 @@ public class RepositoryUsuarios {
             if (usuariosList.get(i).getRut().equalsIgnoreCase(rut)){
 
                 
-                usuariosList.get(i).setRut(usuarioActualizado.getRut());
                 usuariosList.get(i).setNombre(usuarioActualizado.getNombre());
                 usuariosList.get(i).setApellido(usuarioActualizado.getApellido());
                 usuariosList.get(i).setEmail(usuarioActualizado.getEmail());

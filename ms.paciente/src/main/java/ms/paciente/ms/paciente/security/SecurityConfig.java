@@ -3,6 +3,7 @@ package ms.paciente.ms.paciente.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -24,7 +25,8 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         //esta es la lista de endpoints que sepueden usar sin token
-                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/pacientes").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/paciente/rut/{rut}").permitAll()
                         //esta es la lista de endpoints privados
                         .anyRequest().authenticated()
                 )

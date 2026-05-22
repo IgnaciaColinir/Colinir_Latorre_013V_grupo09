@@ -1,5 +1,6 @@
 package ms.paciente.ms.paciente.Repository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -17,9 +18,12 @@ public class RepositoryPacientes {
                 .nombre("Fabian")
                 .apellido("Navarro")
                 .direccion("3 poniente 1234")
+                .fechaNacimiento(LocalDate.of(2002, 4, 5))
                 .telefono("974567890")
                 .email("fabian.navarro@example.com")
-
+                .prevision("fonasa")
+                .rutTutor("20999255-8")
+                .nombreTutor("Fabian Navarro")
                 .build());
 
         pacienteList.add(ModeloPaciente.builder()
@@ -27,8 +31,12 @@ public class RepositoryPacientes {
                 .nombre("Hans")
                 .apellido("Pinilla")
                 .direccion("4 poniente 5678")
+                .fechaNacimiento(LocalDate.of(2000, 12, 12))
                 .telefono("987654321")
                 .email("hans.pinilla@example.com")
+                .prevision("fonasa")
+                .rutTutor("20999256-9")
+                .nombreTutor("Hans Pinilla")
                 .build());
     }
     
@@ -70,12 +78,15 @@ public class RepositoryPacientes {
 
             if (pacienteList.get(i).getRut().equalsIgnoreCase(rut)){
 
-                pacienteList.get(i).setRut(pacienteActualizado.getRut());
                 pacienteList.get(i).setNombre(pacienteActualizado.getNombre());
                 pacienteList.get(i).setApellido(pacienteActualizado.getApellido());
                 pacienteList.get(i).setDireccion(pacienteActualizado.getDireccion());
+                pacienteList.get(i).setFechaNacimiento(pacienteActualizado.getFechaNacimiento());
                 pacienteList.get(i).setTelefono(pacienteActualizado.getTelefono());
                 pacienteList.get(i).setEmail(pacienteActualizado.getEmail());
+                pacienteList.get(i).setPrevision(pacienteActualizado.getPrevision());
+                pacienteList.get(i).setRutTutor(pacienteActualizado.getRutTutor());
+                pacienteList.get(i).setNombreTutor(pacienteActualizado.getNombreTutor());
                 return pacienteList.get(i);
             }
         }    

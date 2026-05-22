@@ -28,9 +28,9 @@ private ServicesUsuario usuarioServices;
     }
 
     //recuerden que la url aqui seria /api/v1/pokemones/1
-   @GetMapping("/{id}")
-    public ResponseEntity<?> obtenerPorId(@PathVariable int id) {
-            List<ModeloUsuario> usuario = usuarioServices.obtenerPorID(id);
+   @GetMapping("/email/{email}")
+    public ResponseEntity<?> obtenerPorEmail(@PathVariable String email) {
+            List<ModeloUsuario> usuario = usuarioServices.obtenerPorEmail(email);
             return ResponseEntity.ok(usuario);
     }
 

@@ -5,9 +5,14 @@ import org.springframework.stereotype.Service;
 
 import ms.agenda.agenda.Model.ModelAgenda;
 import ms.agenda.agenda.Repository.RepositoryAgenda;
+import ms.agenda.agenda.client.PacienteClient;
+import ms.agenda.agenda.client.ProfesionalClient;
 import ms.agenda.agenda.dto.request.AgendaRequestDTO;
 import ms.agenda.agenda.dto.response.AgendaResponseDTO;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 
@@ -16,6 +21,12 @@ public class ServiceAgenda {
 
     @Autowired
     private RepositoryAgenda agendaRepository;
+
+    @Autowired
+    private PacienteClient pacienteClient;
+
+    @Autowired
+    private ProfesionalClient profesionalClient;
 
     public List<ModelAgenda> obtenerTodas() {
         try {
@@ -34,6 +45,7 @@ public class ServiceAgenda {
     }
 
     public AgendaResponseDTO guardarCita(AgendaRequestDTO request) {
+        //1. Validar que el paciente no tenga otra cita a la misma hora con otro profesional
         List<ModelAgenda> citasdelDia = agendaRepository.findByProfesionalAndFecha(
             request.getIdProfesional(),
             request.getFecha()
@@ -45,6 +57,24 @@ public class ServiceAgenda {
         if(estaOcupado){
             throw new RuntimeException("El profesional ya tiene una cita reservada a esa hora");
         }
+        //2. Validar que la fecha y hora de la cita no sea en el pasado
+        LocalDate fechaCita = LocalDate.parse(request.getFecha()); // Convierte "2026-05-25"
+        LocalTime horaCita = LocalTime.parse(request.getHora());   // Convierte "14:30:00"
+
+        LocalDateTime fechaHoraCita = LocalDateTime.of(fechaCita, horaCita);        
+        if (fechaHoraCita.isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("No se puede agendar una cita en una fecha u hora pasada.");
+        }
+        //3. Validar que el paciente esté activo mediante Feign
+        try {
+            var paciente = pacienteClient.obtenerPacientePorRut(request.getIdPaciente());
+            if (paciente == null ) {
+                throw new RuntimeException("El paciente no está autorizado para agendar.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error al validar el paciente mediante Feign: " + e.getMessage());
+        }
+
 
         ModelAgenda citaNueva = ModelAgenda.builder()
                 .id(request.getId())
