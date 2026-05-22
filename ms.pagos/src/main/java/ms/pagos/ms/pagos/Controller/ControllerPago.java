@@ -35,7 +35,7 @@ private ServicePago pagoService;
     public ResponseEntity<PagoResponseDTO> guardar(
             @Valid @RequestBody PagoRequestDTO request
     ) {
-        PagoResponseDTO nuevo = pagoService.guardar(request);
+        PagoResponseDTO nuevo = pagoService.guardarPago(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
     }
 

@@ -34,10 +34,10 @@ private ConsultaService consultaService;
 
 
     @PostMapping
-    public ResponseEntity<ConsultasResponseDTO> guardar(
+    public ResponseEntity<ConsultasResponseDTO> guardarConsulta(
             @Valid @RequestBody ConsultasRequestDTO request
     ) {
-        ConsultasResponseDTO nuevo = consultaService.guardar(request);
+        ConsultasResponseDTO nuevo = consultaService.guardarConsulta(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
     }
 

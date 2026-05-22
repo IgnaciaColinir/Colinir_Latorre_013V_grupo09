@@ -43,33 +43,39 @@ public class ServicesUsuario {
 
     
     public UsuarioResponseDTO guardar(UsuarioRequestDTO request) {
+    try {
 
-        ModeloUsuario existente = usuariosRepository.findByRut(request.getRut()).stream().findFirst().orElse(null);
+        // 1. Verificar si el usuario ya existe
+        ModeloUsuario existente = usuariosRepository.findByRut(request.getRut())
+                .stream().findFirst().orElse(null);
 
         if (existente != null) {
             throw new RuntimeException("El usuario con rut " + request.getRut() + " ya existe");
         }
 
-        ModeloUsuario emailExistente = usuariosRepository.findByEmail(request.getEmail()).stream().findFirst().orElse(null);
+        // 2. Verificar que el correo no esté duplicado
+        ModeloUsuario emailExistente = usuariosRepository.findByEmail(request.getEmail())
+                .stream().findFirst().orElse(null);
 
         if (emailExistente != null) {
             throw new RuntimeException("El email " + request.getEmail() + " ya esta asociado a un usuario");
         }
 
+        // 3. Restringir los Usuarios permitidos
         String cargo = request.getCargo().toUpperCase();
-        if (!cargo.equals("ADMINISTRADOR") && !cargo.equals("MEDICO") && !cargo.equals("ADMINISTRATIVO") 
-            && !cargo.equals("CONTABLE")){
+        if (!cargo.equals("ADMINISTRADOR") && !cargo.equals("MEDICO") && 
+            !cargo.equals("ADMINISTRATIVO") && !cargo.equals("CONTABLE")) {
             throw new RuntimeException("Cargo no válido. Debe ser ADMINISTRADOR, MEDICO, ADMINISTRATIVO o CONTABLE");
         }
 
+        
         ModeloUsuario usuario = ModeloUsuario.builder()
-
                 .rut(request.getRut())
                 .nombre(request.getNombre())
                 .apellido(request.getApellido())
-                .email((request.getEmail()))
-                .password((request.getPassword()))
-                .cargo((request.getCargo()))
+                .email(request.getEmail())
+                .password(request.getPassword()) 
+                .cargo(cargo) 
                 .build();
 
         ModeloUsuario guardado = usuariosRepository.save(usuario);
@@ -78,11 +84,15 @@ public class ServicesUsuario {
                 .rut(guardado.getRut())
                 .nombre(guardado.getNombre())
                 .apellido(guardado.getApellido())
-                .email((guardado.getEmail()))
-                .password((guardado.getPassword()))
-                .cargo((guardado.getCargo()))
+                .email(guardado.getEmail())
+                .password(guardado.getPassword())
+                .cargo(guardado.getCargo())
                 .build();
+
+    } catch (Exception e) {
+        throw new RuntimeException("Error fatal e inesperado al registrar el usuario: " + e.getMessage());
     }
+}
     
     public ModeloUsuario actualizar(String rut, ModeloUsuario usuarioActualizado) {
             try {

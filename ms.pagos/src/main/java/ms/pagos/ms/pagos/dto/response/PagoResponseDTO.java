@@ -1,5 +1,8 @@
 package ms.pagos.ms.pagos.dto.response;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -15,5 +18,5 @@ public class PagoResponseDTO {
     private double montoTotal;
     private String metodoPago;
     private String estado;
-    private String fechaPago;
+    private LocalDateTime fechaPago;
 }

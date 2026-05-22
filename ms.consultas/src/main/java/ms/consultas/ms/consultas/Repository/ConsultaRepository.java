@@ -4,6 +4,8 @@ import org.springframework.stereotype.Repository;
 
 import ms.consultas.ms.consultas.Modelo.ModeloConsulta;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -17,10 +19,12 @@ public class ConsultaRepository {
     public ConsultaRepository() {
         consultasList.add(ModeloConsulta.builder()
                 .id(nextId++)
+                .idPaciente("20753429-3")
                 .nomPaciente("Isidora Contreras")
+                .idMedico("20999255-8")
                 .nomMedico("Fabian Navarro")
-                .fechaConsulta("2026-01-01")
-                .horaConsulta("10:00")
+                .fechaConsulta(LocalDate.parse("2026-01-01"))
+                .horaConsulta(LocalTime.parse("10:00"))
                 .diagnostico("Chequeo médico")
                 .valorConsulta(50000)
                 .valorTratamiento(35000)
@@ -28,10 +32,12 @@ public class ConsultaRepository {
 
         consultasList.add(ModeloConsulta.builder()
                 .id(nextId++)
+                .idPaciente("20753567-4")   
                 .nomPaciente("Hans Pinilla")
+                .idMedico("8669575-8")
                 .nomMedico("Giovanni Roa")
-                .fechaConsulta("2026-03-02")
-                .horaConsulta("11:00")
+                .fechaConsulta(LocalDate.parse("2026-03-02"))
+                .horaConsulta(LocalTime.parse("11:00"))
                 .diagnostico("Tratamiento especial")
                 .valorConsulta(100000)
                 .valorTratamiento(50000)
@@ -58,12 +64,6 @@ public class ConsultaRepository {
 
     public ModeloConsulta update(int id, ModeloConsulta consultaActualizada) {
 
-        /* EJEMPLO 1
-        Recorro toda la lista con un for normal.
-        Si encuentro una consulta con el mismo id,
-        actualizo sus datos y lo retorno.
-        Si no lo encuentro, retorno null.
-        */
         for (int i = 0; i < consultasList.size(); i++) {
 
             if (consultasList.get(i).getId() == id) {
@@ -106,8 +106,9 @@ public class ConsultaRepository {
     }
 
     public List<ModeloConsulta> findByDate(String fechaConsulta) {
+        LocalDate fechaBusqueda = LocalDate.parse(fechaConsulta);
         return consultasList.stream() // convierte la lista a un formato legible por java asincronamente
-                .filter(p -> p.getFechaConsulta().equalsIgnoreCase(fechaConsulta)) // Filtra por fecha de consulta ignorando mayúsculas/minúsculas
+                .filter(p -> p.getFechaConsulta().isEqual(fechaBusqueda)) // Filtra por fecha de consulta ignorando mayúsculas/minúsculas
                 .sorted(Comparator.comparing(ModeloConsulta::getId)) // Ordena por id
                 .toList(); //recuerden siempre vovler a transformar el onjeto en una nueva lista
     }

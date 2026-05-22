@@ -3,13 +3,20 @@ package ms.pagos.ms.pagos.Services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ms.pagos.ms.pagos.Client.ConsultaClient;
+import ms.pagos.ms.pagos.Client.PacienteClient;
 import ms.pagos.ms.pagos.Modelo.ModeloPago;
 import ms.pagos.ms.pagos.Repository.RepositoryPago;
 import ms.pagos.ms.pagos.dto.request.PagoRequestDTO;
+import ms.pagos.ms.pagos.dto.response.ConsultasResponse;
+import ms.pagos.ms.pagos.dto.response.PacienteResponse;
 import ms.pagos.ms.pagos.dto.response.PagoResponseDTO;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import javax.management.RuntimeErrorException;
 
 
 @Service // Marca esta clase como capa de lógica de negocio
@@ -17,6 +24,12 @@ public class ServicePago {
 
     @Autowired
     private RepositoryPago pagoRepository;
+
+    @Autowired
+    private PacienteClient pacienteClient;
+    
+    @Autowired
+    private ConsultaClient consultaClient;
 
     public List<ModeloPago> obtenerTodos() {
         try {
@@ -34,36 +47,74 @@ public class ServicePago {
         }
     }
 
-    public PagoResponseDTO guardar(PagoRequestDTO request) {
-    // 1. Validaciones previas al guardado
-    Optional<ModeloPago> pagoExistente = pagoRepository.findByConsulta(request.getIdConsulta()).stream().findFirst();
+    public PagoResponseDTO guardarPago(PagoRequestDTO request) {
+        try{
 
-    if (pagoExistente.isPresent()) {
-        String estadoActual = pagoExistente.get().getEstado();
+
+            //1. verifica si hay paciente
+            PacienteResponse paciente = pacienteClient.obtenerPacientePorRut(request.getIdPaciente());
+
+            if(paciente == null){
+                throw new RuntimeException("El paciente no existe");
+                }
+    
+            ConsultasResponse consulta = consultaClient.obtenerConsultaPorid(request.getIdConsulta());
+            if(consulta == null){
+                throw new RuntimeException( "No se puede pagar, la consulta no existe");
+            }
+
+            if(request.getValorConsulta() != consulta.getValorConsulta() || 
+                request.getValorTratamiento() != consulta.getValorTratamiento()){
+                    throw new RuntimeException("Inconsistencia, los valores no coinciden con el costo real de la consulta");
+                }
+
+
+            
+            // 2. Validacion de estado
+            Optional<ModeloPago> pagoExistente = pagoRepository.findByConsulta(request.getIdConsulta()).stream().findFirst();
+
+            if (pagoExistente.isPresent()) {
+                String estadoActual = pagoExistente.get().getEstado();
+            
         
-        // Si ya está pagado, no permitimos hacer nada más
-        if (estadoActual.equalsIgnoreCase("Pagado")) {
-            throw new RuntimeException("Ya existe un pago registrado e inmutable para esta consulta.");
-        }
+                // Si ya está pagado, no permitimos hacer nada más
+                if (estadoActual.equalsIgnoreCase("Pagado")) {
+                    throw new RuntimeException("Ya existe un pago registrado e inmutable para esta consulta.");
+                    }
         
-        // Si está cancelado, tampoco deberías poder operarlo de nuevo
-        if (estadoActual.equalsIgnoreCase("Cancelado")) {
-            throw new RuntimeException("No se puede procesar un pago para una consulta cancelada.");
-        }
-    }
+                // Si está cancelado, tampoco deberías poder operarlo de nuevo
+                if (estadoActual.equalsIgnoreCase("Cancelado")) {
+                    throw new RuntimeException("No se puede procesar un pago para una consulta cancelada.");
+                    }
+            }
+            
+            
 
-    try {
-        // 2. Calcular el monto total
-        double totalCalculado = request.getValorConsulta() + request.getValorTratamiento();
+   
+            // 3. Calcular el monto total
+            double totalCalculado = request.getValorConsulta() + request.getValorTratamiento();
 
-        // 3. Evaluar el estado que viene en el Request (Evitamos NullPointerException usando "Pagado".equals)
-        String estadoFinal = request.getEstado();
-        if (estadoFinal == null || estadoFinal.isEmpty()) {
+
+
+            // 4. Evaluar el estado que viene en el Request (Evitamos NullPointerException usando "Pagado".equals)
+            String estadoFinal = request.getEstado();
+            if (estadoFinal == null || estadoFinal.isEmpty()) {
             estadoFinal = "Pendiente"; // Estado por defecto si no envían nada
-        }
+            }
 
-        // 4. Mapear al modelo con el estado dinámico
-        ModeloPago nuevopago = ModeloPago.builder()
+
+
+            //5.Metodo de pago
+            String metodo = request.getMetodoPago().toUpperCase();
+            if (!metodo.equals("EFECTIVO")&& !metodo.equals("DEBITO")&&
+             !metodo.equals("CREDITO") && !metodo.equals("TRANSFERENCIA")){
+                throw new RuntimeException("Metodo de pago no permitido por la clinica");
+             }
+
+             
+
+            // 4. Mapear al modelo con el estado dinámico
+            ModeloPago nuevopago = ModeloPago.builder()
                 .idConsulta(request.getIdConsulta())
                 .idPaciente(request.getIdPaciente())
                 .valorConsulta(request.getValorConsulta())
@@ -71,13 +122,13 @@ public class ServicePago {
                 .montoTotal(totalCalculado)
                 .metodoPago(request.getMetodoPago())
                 .estado(estadoFinal) // <-- Aquí usamos el estado dinámico validado
-                .fechaPago(request.getFechaPago())
+                .fechaPago(LocalDateTime.now())
                 .build();
 
-        ModeloPago pagoguardado = pagoRepository.save(nuevopago);
+            ModeloPago pagoguardado = pagoRepository.save(nuevopago);
 
-        // 5. Retornar el ResponseDTO estructurado con tus Builders
-        return PagoResponseDTO.builder()
+            // 5. Retornar el ResponseDTO estructurado con tus Builders
+            return PagoResponseDTO.builder()
                 .id(pagoguardado.getId())
                 .idConsulta(pagoguardado.getIdConsulta())
                 .idPaciente(pagoguardado.getIdPaciente())
@@ -89,10 +140,12 @@ public class ServicePago {
                 .fechaPago(pagoguardado.getFechaPago())
                 .build();
 
-    } catch (Exception e) {
-        throw new RuntimeException("Error fatal al registrar el estado del pago: " + e.getMessage());
+        } catch (Exception e) {
+                throw new RuntimeException("Error fatal al registrar el estado del pago: " + e.getMessage());
+            }
+        
+      
     }
-}
     
                 
 

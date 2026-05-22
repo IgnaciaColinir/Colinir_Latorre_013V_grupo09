@@ -5,6 +5,7 @@ import ms.pagos.ms.pagos.Modelo.ModeloPago;
 
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -20,12 +21,12 @@ public class RepositoryPago {
                 .id(nextId++)
                 .idConsulta(1)
                 .idPaciente("P001")
-                .valorConsulta(20.000)
-                .valorTratamiento(15.000)
-                .montoTotal(35.000)
+                .valorConsulta(20000)
+                .valorTratamiento(15000)
+                .montoTotal(35000)
                 .metodoPago("Tarjeta")
                 .estado("Pagado")
-                .fechaPago("2023-10-10")
+                .fechaPago(LocalDateTime.now())
                 .build());
     }
 

@@ -4,6 +4,8 @@ import org.springframework.stereotype.Repository;
 
 import ms.agenda.agenda.Model.ModelAgenda;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -17,8 +19,8 @@ public class RepositoryAgenda {
     public RepositoryAgenda() {
         agendaList.add(ModelAgenda.builder()
                 .id(nextId++)
-                .fecha("14/02/2026")
-                .hora("10:00")
+                .fecha(LocalDate.parse("14/02/2026"))
+                .hora(LocalTime.parse("10:00"))
                 .idProfesional("1")
                 .idPaciente("Ash")
                 .estado("reservada")
@@ -26,8 +28,8 @@ public class RepositoryAgenda {
 
         agendaList.add(ModelAgenda.builder()
                 .id(nextId++)
-                .fecha("15/02/2026")
-                .hora("11:00")
+                .fecha(LocalDate.parse("15/02/2026"))
+                .hora(LocalTime.parse("11:00"))
                 .idProfesional("2")
                 .idPaciente("Misty")
                 .estado("cancelada")
@@ -89,7 +91,7 @@ public class RepositoryAgenda {
 
     }
 
-    public List<ModelAgenda> findByProfesionalAndFecha(String idProfesional, String fecha) {
+    public List<ModelAgenda> findByProfesionalAndFecha(String idProfesional, LocalDate fecha) {
         return agendaList.stream() // convierte la lista a un formato legible por java asincronamente
                 .filter(c -> c.getIdProfesional().equals(idProfesional)) // Filtra por tipo ignorando mayúsculas/minúsculas
                 .filter(c-> c.getFecha().equals(fecha))

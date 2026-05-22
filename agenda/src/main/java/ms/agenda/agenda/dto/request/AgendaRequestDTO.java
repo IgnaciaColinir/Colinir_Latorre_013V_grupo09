@@ -1,5 +1,8 @@
 package ms.agenda.agenda.dto.request;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -8,9 +11,9 @@ public class AgendaRequestDTO {
 
     private int id;
     @NotBlank(message = "El campo fecha es obligatorio")
-    private String fecha;
+    private LocalDate fecha;
     @NotBlank(message = "El campo hora es obligatorio")
-    private String hora;
+    private LocalTime hora;
     @NotBlank(message = "El campo idProfesional es obligatorio")
     private String idProfesional;
     @NotBlank(message = "El campo idPaciente es obligatorio")

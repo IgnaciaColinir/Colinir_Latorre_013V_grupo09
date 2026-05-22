@@ -42,33 +42,33 @@ public class ServicesPaciente {
     }
 
     public PacienteResponseDTO registrarPaciente(PacienteRequestDTO request) {
-        
-        ModeloPaciente existente = pancientesRepository.findByRut(request.getRut()).stream().findFirst().orElse(null);
+    try {
+
+        // 1. No pueden haber 2 pacientes con el mismo rut
+        ModeloPaciente existente = pancientesRepository.findByRut(request.getRut())
+                .stream().findFirst().orElse(null);
         
         if (existente != null) {
             throw new RuntimeException("El paciente con rut " + request.getRut() + " ya existe");
         }
 
+        // 2. Validación de Tutor Responsable
         int ageNacimiento = request.getFechaNacimiento().getYear();
         int ageActual = java.time.LocalDate.now().getYear();
-
         int edad = ageActual - ageNacimiento;
 
         if (edad < 15 && (request.getRutTutor() == null || request.getNombreTutor().isBlank())) {
-            throw new RuntimeException("El paciente es menor de edad, se requiere un tutor responsable");
+            throw new RuntimeException("El paciente es menor de edad (menor de 15 años), se requiere un tutor responsable");
         }
 
-
         ModeloPaciente paciente = ModeloPaciente.builder()
-
-
                 .rut(request.getRut())
                 .nombre(request.getNombre())
                 .apellido(request.getApellido())
                 .direccion(request.getDireccion())
                 .fechaNacimiento(request.getFechaNacimiento())
-                .telefono((request.getTelefono()))
-                .email((request.getEmail()))
+                .telefono(request.getTelefono())
+                .email(request.getEmail())
                 .prevision(request.getPrevision())
                 .rutTutor(request.getRutTutor())
                 .nombreTutor(request.getNombreTutor())
@@ -81,15 +81,21 @@ public class ServicesPaciente {
                 .nombre(guardado.getNombre())
                 .apellido(guardado.getApellido())
                 .direccion(guardado.getDireccion())
-                .telefono((guardado.getTelefono()))
-                .email((guardado.getEmail()))
+                .telefono(guardado.getTelefono())
+                .email(guardado.getEmail())
                 .fechaNacimiento(guardado.getFechaNacimiento())
                 .prevision(guardado.getPrevision())
                 .rutTutor(guardado.getRutTutor())
                 .nombreTutor(guardado.getNombreTutor())
                 .build();
+
+    //} catch (RuntimeException e) {
+        // Deja pasar directamente nuestros mensajes controlados (Rut duplicado o falta de tutor)
+        //throw e;
+    } catch (Exception e) {
+        throw new RuntimeException("Error fatal e inesperado al registrar el paciente: " + e.getMessage());
     }
-    
+}
     public ModeloPaciente actualizar(String rut, ModeloPaciente pacienteActualizado) {
             try { 
                

@@ -1,5 +1,8 @@
 package ms.agenda.agenda.dto.response;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,8 +11,8 @@ import lombok.Data;
 public class AgendaResponseDTO {
 
     private int id;
-    private String fecha;
-    private String hora;
+    private LocalDate fecha;
+    private LocalTime hora;
     private String idProfesional;
     private String idPaciente;
     private String estado;

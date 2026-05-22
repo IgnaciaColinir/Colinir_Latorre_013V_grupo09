@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -64,7 +65,7 @@ private ServiceAgenda agendaService;
     }
 
     @GetMapping("/disponibilidad")// Endpoint GET solo de las citas disponibles
-    public ResponseEntity<?> citasDisponibles(@RequestParam String idProfesional, @RequestParam String fecha) {
+    public ResponseEntity<?> citasDisponibles(@RequestParam String idProfesional, @RequestParam LocalDate fecha) {
         try {
             return ResponseEntity.ok(agendaService.obtenerCitasDisponibles(idProfesional, fecha));
 

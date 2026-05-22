@@ -1,5 +1,8 @@
 package ms.pagos.ms.pagos.dto.request;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -22,5 +25,5 @@ public class PagoRequestDTO {
     @NotBlank(message = "El estado del pago es obligatorio")
     private String estado;
     @NotBlank(message = "La fecha de pago es obligatoria")
-    private String fechaPago;
+    LocalDateTime fechaPago;
 }

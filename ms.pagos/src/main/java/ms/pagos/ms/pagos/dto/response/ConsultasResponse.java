@@ -1,4 +1,4 @@
-package ms.consultas.ms.consultas.dto.response;
+package ms.pagos.ms.pagos.dto.response;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ConsultasResponseDTO {
+public class ConsultasResponse {
 
     private int id;
     private String nomPaciente;

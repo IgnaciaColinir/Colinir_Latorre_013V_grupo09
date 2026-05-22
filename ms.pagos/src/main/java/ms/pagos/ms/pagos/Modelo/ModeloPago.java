@@ -1,5 +1,8 @@
 package ms.pagos.ms.pagos.Modelo;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -9,7 +12,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor@Builder
+@AllArgsConstructor
+@Builder
 public class ModeloPago {
     
     private int id; 
@@ -26,7 +30,6 @@ public class ModeloPago {
     private String metodoPago;
     @NotBlank(message = "El estado del pago es obligatorio")
     private String estado;
-    @NotBlank(message = "La fecha de pago es obligatoria")
-    private String fechaPago;
+    private LocalDateTime fechaPago;
 
 }
