@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 
+
 @SpringBootApplication
 @EnableFeignClients // ¡ESTO ES CLAVE PARA CONECTAR LOS MICROSERVICIOS DESPUÉS!
 public class MsFichasApplication {

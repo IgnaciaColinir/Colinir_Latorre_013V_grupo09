@@ -3,6 +3,7 @@ package clinicaSalud.ms_fichas.Service;
 import clinicaSalud.ms_fichas.DTO.FichaDTO;
 import clinicaSalud.ms_fichas.Model.Ficha;
 import clinicaSalud.ms_fichas.Repository.FichaRepository;
+import clinicaSalud.ms_fichas.feign.PacienteFeignClient; // <-- Importamos tu teléfono
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,10 @@ public class FichaService {
 
     @Autowired
     private FichaRepository repository;
+
+    // aca llamamos al ms-paciente para traer los datos del paciente y pegarlos a la ficha, pero sin que el ms-paciente tenga que saber nada de las fichas, gracias a FeignClient
+    @Autowired
+    private PacienteFeignClient pacienteFeignClient;
 
     private FichaDTO convertirADto(Ficha ficha) {
         FichaDTO dto = new FichaDTO();
@@ -48,9 +53,22 @@ public class FichaService {
     public List<FichaDTO> obtenerPorRut(String rut) {
         List<Ficha> fichas = repository.findByRutPaciente(rut);
         List<FichaDTO> dtos = new ArrayList<>();
-        for (Ficha f : fichas) {
-            dtos.add(convertirADto(f));
+
+        Object datosPaciente = null;
+        try {
+            // Si el ms-paciente de ella está encendido en el 8095, nos pasa los datos
+            datosPaciente = pacienteFeignClient.obtenerPacientePorRut(rut);
+        } catch (Exception e) {
+            // Si el ms-paciente de ella está apagado, no explota tu sistema, solo avisa
+            System.out.println("Aviso: No se pudo conectar con ms-paciente para el RUT " + rut);
         }
+
+        for (Ficha f : fichas) {
+            FichaDTO dto = convertirADto(f);
+            dto.setPaciente(datosPaciente); // ¡Le pegamos los datos que nos mandó la Nacha!
+            dtos.add(dto);
+        }
+        
         return dtos;
     }
 }
