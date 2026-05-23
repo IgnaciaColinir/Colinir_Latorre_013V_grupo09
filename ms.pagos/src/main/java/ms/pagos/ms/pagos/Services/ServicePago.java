@@ -139,7 +139,9 @@ public class ServicePago {
                 .estado(pagoguardado.getEstado())
                 .fechaPago(pagoguardado.getFechaPago())
                 .build();
-
+                
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception e) {
                 throw new RuntimeException("Error fatal al registrar el estado del pago: " + e.getMessage());
             }
