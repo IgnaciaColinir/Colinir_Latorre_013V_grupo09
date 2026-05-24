@@ -20,7 +20,7 @@ import clinicaSalud.ms_profesionales.dto.response.ProfesionalResponseDTO;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/profesionales")
+@RequestMapping("/api/v1/profesionales")
 public class ProfesionalController {
 
     @Autowired

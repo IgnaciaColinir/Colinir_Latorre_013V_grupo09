@@ -16,9 +16,9 @@ public class SecurityConfig {
             // 1. Desactivamos la protección de formularios web (porque usamos Postman y React/Angular)
             .csrf(csrf -> csrf.disable())
             
-            // 2. Le decimos al gorila qué puertas dejar abiertas
+            
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/login").permitAll() // Dejar pasar a todos al Login
+                .requestMatchers("/api/v1/auth/login").permitAll() // Dejar pasar a todos al Login
                 .anyRequest().authenticated() // Cualquier otra ruta, pedir Token obligatorio
             );
             

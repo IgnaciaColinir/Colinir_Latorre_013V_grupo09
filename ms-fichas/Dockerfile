@@ -1,14 +1,11 @@
-# 1. Usamos la imagen oficial de Java 21 
-FROM eclipse-temurin:21-jdk-alpine
-
-# 2. Le decimos a Docker en qué carpeta del contenedor vamos a trabajar
+FROM maven:3.9.9-eclipse-temurin-21 AS build
 WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# 3. Copiamos el archivo .jar ya compilado desde tu carpeta target hacia el contenedor
-COPY target/ms-fichas-0.0.1-SNAPSHOT.jar app.jar
-
-# 4. Atiende por el puerto 8094
+FROM eclipse-temurin:21-jdk
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8094
-
-# 5. El comando exacto para encender tu aplicación cuando Docker despierte
 ENTRYPOINT ["java", "-jar", "app.jar"]

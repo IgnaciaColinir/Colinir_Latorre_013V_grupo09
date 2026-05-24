@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/fichas")
+@RequestMapping("/api/v1/fichas")
 public class FichaController {
 
     @Autowired

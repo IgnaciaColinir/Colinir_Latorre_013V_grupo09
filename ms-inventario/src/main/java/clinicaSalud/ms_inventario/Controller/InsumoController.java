@@ -14,7 +14,7 @@ import clinicaSalud.ms_inventario.DTO.InsumoDTO;
 import clinicaSalud.ms_inventario.Service.InsumoService;
 
 @RestController
-@RequestMapping("/insumos") // Plural y directo al recurso
+@RequestMapping("/api/v1/insumos") 
 public class InsumoController {
 
     @Autowired

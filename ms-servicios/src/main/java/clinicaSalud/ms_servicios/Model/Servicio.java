@@ -14,8 +14,8 @@ public class Servicio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idServicio;
     
-    private String nombre; // Ej: Ecografia Abdominal, Hemograma
+    private String nombre; // Ej: Ecografia Abdominal, Hemograma,etc,etcetvc
     private String descripcion;
     private int precio; 
-    private boolean requiereAyuno; // Detalles que le gustan a los profes
+    private boolean requiereAyuno; // Pa meter algun booleano 
 }

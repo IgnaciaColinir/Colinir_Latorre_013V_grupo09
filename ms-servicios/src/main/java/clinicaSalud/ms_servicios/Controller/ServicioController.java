@@ -17,7 +17,7 @@ import clinicaSalud.ms_servicios.Service.ServicioService;
 // aca arreglé lo que dijo el profe de catalogo porque ahora ta el servicio y el DTO
 
 @RestController
-@RequestMapping("/servicios")
+@RequestMapping("/api/v1/servicios")
 public class ServicioController {
 
     @Autowired

@@ -11,7 +11,7 @@ import clinicaSalud.ms_auth.Dto.AuthRequest;
 import clinicaSalud.ms_auth.Service.AuthService;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     @Autowired

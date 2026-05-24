@@ -14,7 +14,7 @@ public class Ficha {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idFicha;
     
-    private String rutPaciente; // La clave para conectarlo mentalmente con el ms de la Nacha
+    private String rutPaciente; // La clave para conectarlo con el ms de la Nacha
     private String tipoSangre;
     private String alergias;
     private String antecedentesFamiliares;
