@@ -1,46 +1,67 @@
 services:
   # ==========================================
-  # 1. EL MOTOR DE BASE DE DATOS ÚNICO
+  # 1. AUTH
   # ==========================================
-  mysql-clinica:
+  mysql-auth:
     image: mysql:8.0
-    container_name: mysql-clinica
+    container_name: mysql-auth
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
     ports:
       - "3306:3306"
-    volumes:
-      - mysql_clinica_data:/var/lib/mysql
-
-  # ==========================================
+      
   ms-auth:
     build:
       context: ./ms-auth
     container_name: ms-auth
     restart: always
     depends_on:
-      - mysql-clinica
+      - mysql-auth
     ports:
       - "8090:8090"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-clinica:3306/clinica_auth?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-auth:3306/clinica_auth?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
 
+  # ==========================================
+  # 2. SERVICIOS
+  # ==========================================
+  mysql-servicios:
+    image: mysql:8.0
+    container_name: mysql-servicios
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+      
   ms-servicios:
     build:
       context: ./ms-servicios
     container_name: ms-servicios
     restart: always
     depends_on:
-      - mysql-clinica
+      - mysql-servicios
     ports:
       - "8091:8091"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-clinica:3306/clinica_servicios?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-servicios:3306/clinica_servicios?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
+
+  # ==========================================
+  # 3. PROFESIONALES
+  # ==========================================
+  mysql-profesionales:
+    image: mysql:8.0
+    container_name: mysql-profesionales
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3308:3306"
 
   ms-profesionales:
     build:
@@ -48,13 +69,25 @@ services:
     container_name: ms-profesionales
     restart: always
     depends_on:
-      - mysql-clinica
+      - mysql-profesionales
     ports:
       - "8092:8092"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-clinica:3306/clinica_profesionales?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-profesionales:3306/clinica_profesionales?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
+
+  # ==========================================
+  # 4. INVENTARIO
+  # ==========================================
+  mysql-inventario:
+    image: mysql:8.0
+    container_name: mysql-inventario
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3309:3306"
 
   ms-inventario:
     build:
@@ -62,13 +95,25 @@ services:
     container_name: ms-inventario
     restart: always
     depends_on:
-      - mysql-clinica
+      - mysql-inventario
     ports:
       - "8093:8093"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-clinica:3306/clinica_inventario?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-inventario:3306/clinica_inventario?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
+
+  # ==========================================
+  # 5. FICHAS
+  # ==========================================
+  mysql-fichas:
+    image: mysql:8.0
+    container_name: mysql-fichas
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3310:3306"
 
   ms-fichas:
     build:
@@ -76,28 +121,52 @@ services:
     container_name: ms-fichas
     restart: always
     depends_on:
-      - mysql-clinica
+      - mysql-fichas
+      - ms-paciente
     ports:
       - "8094:8094"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-clinica:3306/clinica_fichas?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-fichas:3306/clinica_fichas?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
 
   # ==========================================
+  # 6. PACIENTE 
+  # ==========================================
+  mysql-paciente:
+    image: mysql:8.0
+    container_name: mysql-paciente
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3311:3306"
+
   ms-paciente:
     build:
       context: ./ms.paciente
     container_name: ms-paciente
     restart: always
     depends_on:
-      - mysql-clinica
+      - mysql-paciente
     ports:
       - "8095:8095"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-clinica:3306/clinica_pacientes?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-paciente:3306/clinica_pacientes?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
+
+  # ==========================================
+  # 7. USUARIO 
+  # ==========================================
+  mysql-usuario:
+    image: mysql:8.0
+    container_name: mysql-usuario
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3312:3306"
 
   ms-usuario:
     build:
@@ -105,13 +174,25 @@ services:
     container_name: ms-usuario
     restart: always
     depends_on:
-      - mysql-clinica
+      - mysql-usuario
     ports:
       - "8096:8096"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-clinica:3306/clinica_usuarios?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-usuario:3306/clinica_usuarios?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
+
+  # ==========================================
+  # 8. AGENDA 
+  # ==========================================
+  mysql-agenda:
+    image: mysql:8.0
+    container_name: mysql-agenda
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3313:3306"
 
   ms-agenda:
     build:
@@ -119,13 +200,27 @@ services:
     container_name: ms-agenda
     restart: always
     depends_on:
-      - mysql-clinica
+      - mysql-agenda
+      - ms-paciente
+      - ms-profesionales
     ports:
       - "8097:8097"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-clinica:3306/clinica_agenda?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-agenda:3306/clinica_agenda?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
+
+  # ==========================================
+  # 9. CONSULTAS 
+  # ==========================================
+  mysql-consultas:
+    image: mysql:8.0
+    container_name: mysql-consultas
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3314:3306"
 
   ms-consultas:
     build:
@@ -133,13 +228,27 @@ services:
     container_name: ms-consultas
     restart: always
     depends_on:
-      - mysql-clinica
+      - mysql-consultas
+      - ms-paciente
+      - ms-profesionales
     ports:
       - "8098:8098"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-clinica:3306/clinica_consultas?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-consultas:3306/clinica_consultas?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
+
+  # ==========================================
+  # 10. PAGOS 
+  # ==========================================
+  mysql-pagos:
+    image: mysql:8.0
+    container_name: mysql-pagos
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3315:3306"
 
   ms-pagos:
     build:
@@ -147,13 +256,10 @@ services:
     container_name: ms-pagos
     restart: always
     depends_on:
-      - mysql-clinica
+      - mysql-pagos
     ports:
       - "8099:8099"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-clinica:3306/clinica_pagos?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-pagos:3306/clinica_pagos?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
-
-volumes:
-  mysql_clinica_data:
