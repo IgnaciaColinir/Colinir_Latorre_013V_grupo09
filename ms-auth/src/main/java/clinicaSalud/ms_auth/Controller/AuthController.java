@@ -43,5 +43,15 @@ public class AuthController {
             log.error("Fallo en el intento de login: {}", e.getMessage());
             return ResponseEntity.status(401).body(e.getMessage());
         }
+    } //  Faltaba cerrar el  login aquí ////// 
+
+    @PostMapping("/register")
+    public ResponseEntity<?> registrar(@RequestBody AuthRequest request) {
+        try {
+            String respuesta = authService.registrar(request);
+            return ResponseEntity.status(201).body(respuesta);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
     }
 }

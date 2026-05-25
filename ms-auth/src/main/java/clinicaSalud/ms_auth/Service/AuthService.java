@@ -43,4 +43,22 @@ public class AuthService {
         log.info("Credenciales validadas correctamente. Fabricando JWT...");
         return jwtUtil.generateToken(usuario.getUsername());
     }
+    // Método para registrar un nuevo usuario en la BD de Auth
+    public String registrar(AuthRequest request) {
+        log.info("Intentando registrar nuevo usuario: {}", request.getUsername());
+        
+        if (repository.findByUsername(request.getUsername()).isPresent()) {
+            log.warn("El usuario {} ya existe en la base de datos de Auth", request.getUsername());
+            throw new RuntimeException("Error: El nombre de usuario ya está ocupado.");
+        }
+
+        Usuario nuevoUsuario = new Usuario();
+        nuevoUsuario.setUsername(request.getUsername());
+        nuevoUsuario.setPassword(request.getPassword()); // En la vida real iría encriptada, pero pal Duoc está joya
+        
+        repository.save(nuevoUsuario);
+        log.info("Usuario {} registrado con éxito en ms-auth", request.getUsername());
+        
+        return "Usuario registrado correctamente en el sistema de seguridad.";
+    }
 }
