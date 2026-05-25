@@ -10,7 +10,6 @@ import lombok.Data;
 @Builder
 public class PacienteResponseDTO {
 
-    private String tratamiento;
     private String rut;
     private String nombre;
     private String apellido;

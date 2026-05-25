@@ -89,9 +89,8 @@ public class ServicesPaciente {
                 .nombreTutor(guardado.getNombreTutor())
                 .build();
 
-    //} catch (RuntimeException e) {
-        // Deja pasar directamente nuestros mensajes controlados (Rut duplicado o falta de tutor)
-        //throw e;
+    } catch (RuntimeException e) {
+        throw e;
     } catch (Exception e) {
         throw new RuntimeException("Error fatal e inesperado al registrar el paciente: " + e.getMessage());
     }

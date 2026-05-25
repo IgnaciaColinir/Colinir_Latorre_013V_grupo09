@@ -20,6 +20,7 @@ public class PacienteController {
 
 @Autowired
 private  ServicesPaciente pacienteServices;
+
     @GetMapping // Endpoint GET para obtener todos
     public ResponseEntity<List<ModeloPaciente>> obtenerTodos() {
         return ResponseEntity.ok(pacienteServices.obtenerTodos());
