@@ -9,7 +9,9 @@ import clinicaSalud.ms_auth.Dto.AuthRequest;
 import clinicaSalud.ms_auth.Model.Usuario;
 import clinicaSalud.ms_auth.Repository.UsuarioRepository;
 import clinicaSalud.ms_auth.Security.JwtUtil;
+import lombok.extern.slf4j.Slf4j; 
 
+@Slf4j // Le damos el corte al Service también
 @Service
 public class AuthService {
 
@@ -20,22 +22,25 @@ public class AuthService {
     private JwtUtil jwtUtil;
 
     public String login(AuthRequest request) {
-        // 1. Buscamos al usuario en la BD real
+        log.info("Consultando credenciales en la base de datos...");
+        
         Optional<Usuario> usuarioOp = repository.findByUsername(request.getUsername());
 
-        // Regla de Negocio 1: Que el usuario exista
         if (usuarioOp.isEmpty()) {
+            // Alerta de seguridad (WARN)
+            log.warn("Alerta: Intento de login con un usuario inexistente ({})", request.getUsername());
             throw new RuntimeException("Error: El usuario no existe en la clínica.");
         }
 
         Usuario usuario = usuarioOp.get();
 
-        // Regla de Negocio 2: Que la clave coincida
         if (!usuario.getPassword().equals(request.getPassword())) {
+            // Alerta de seguridad (WARN)
+            log.warn("Alerta: Contraseña incorrecta para el usuario ({})", request.getUsername());
             throw new RuntimeException("Error: Credenciales incorrectas.");
         }
 
-        // 3. Si pasó las reglas, la fábrica hace el token
+        log.info("Credenciales validadas correctamente. Fabricando JWT...");
         return jwtUtil.generateToken(usuario.getUsername());
     }
 }
