@@ -47,15 +47,12 @@ private ConsultaService consultaService;
             return ResponseEntity.ok(actualizado);
     }
 
-    @DeleteMapping("/{id}")// Endpoint DELETE
-    public ResponseEntity<?> eliminarPorId(@PathVariable int id) {
-        return ResponseEntity.ok("Eliminado");
+   @DeleteMapping("/id/{id}")
+    public ResponseEntity<String> eliminarPorId(@PathVariable int id) {
+        consultaService.eliminarbyId(id);
+        return ResponseEntity.ok("Consulta con ID " + id + " eliminada correctamente.");
     }
 
-    @DeleteMapping("/{nomPaciente}")// Endpoint DELETE
-    public ResponseEntity<?> eliminarPorPaciente(@PathVariable String nomPaciente) {
-        return ResponseEntity.ok("Eliminado");
-    }
 
 
 
@@ -71,7 +68,7 @@ private ConsultaService consultaService;
     }
 
 
-      @GetMapping("/fecha/{fecha}")// Endpoint GET por fecha
+    @GetMapping("/fecha/{fecha}")// Endpoint GET por fecha
     public ResponseEntity<?> buscarPorFecha(@PathVariable String fecha) {
         try {
             return ResponseEntity.ok(consultaService.buscarPorFecha(fecha));
@@ -82,14 +79,14 @@ private ConsultaService consultaService;
         }
     }
 
-    @GetMapping("consulta/{diagnostico}")// Endpoint GET solo consulta por diagnostico
-    public ResponseEntity<?> buscarPorConsulta(String motivoConsulta) {
+    @GetMapping("/diagnostico/{diagnostico}")// Endpoint GET solo consulta por diagnostico
+    public ResponseEntity<?> buscarPorConsulta(@PathVariable("diagnostico") String motivoConsulta) {
         try {
             return ResponseEntity.ok(consultaService.buscarPorDiagnostico(motivoConsulta));
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al obtener legendarios: " + e.getMessage());
+                    .body("Error al obtener consultas por diagnostico: " + e.getMessage());
         }
     }
 }

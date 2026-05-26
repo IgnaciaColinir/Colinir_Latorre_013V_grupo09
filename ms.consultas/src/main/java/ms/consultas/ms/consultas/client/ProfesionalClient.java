@@ -9,12 +9,12 @@ import ms.consultas.ms.consultas.dto.response.ProfesionalResponse;
 
 @FeignClient(
         name = "ms-profesionales",
-        url = "jdbc:mysql://mysql-db:3306/clinica_profesionales?createDatabaseIfNotExist=true",
+        url = "http://localhost:8092",
         configuration = FeignConfig.class
 )
 public interface ProfesionalClient {
 
-    // Llama al endpoint GET /api/v1/profesionales/{rut} del microservicio de profesionales
+    // Llama al endpoint GET /api/v1/profesionales/rut/{rut} del microservicio de profesionales
     @GetMapping("/api/v1/profesionales/rut/{rut}")
     ProfesionalResponse obtenerProfesionalPorRut(@PathVariable("rut") String rut);
 

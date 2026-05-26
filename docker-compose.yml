@@ -204,7 +204,7 @@ services:
       - ms-paciente
       - ms-profesionales
     ports:
-      - "8097:8097"
+      - "8081:8081"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-agenda:3306/clinica_agenda?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root

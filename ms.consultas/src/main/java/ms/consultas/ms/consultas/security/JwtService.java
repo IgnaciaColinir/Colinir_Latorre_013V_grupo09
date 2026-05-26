@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "ESTA_ES_UNA_CLAVE_SECRETA_DE_PRUEBA_123456";
+    private static final String SECRET_KEY = "MiClaveSuperSecretaParaLaClinicaDelDuocQueTieneQueSerLargaParaQueSeaSegura123456789";
 
     
 
@@ -21,22 +21,38 @@ public class JwtService {
     }
 
     
-    public String obtenerUsername(String token) {
-        Claims claims = Jwts.parser()
+    public Claims obtenerTodosLosClaims(String token) {
+        return Jwts.parser()
                 .verifyWith(getKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
 
-        return claims.getSubject();
+        
+    }
+
+    public String obtenerUsername(String token) {
+        try {
+            Claims claims = obtenerTodosLosClaims(token);
+            return claims.getSubject();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public boolean tokenValido(String token) {
         try {
-            obtenerUsername(token);
-            return true;
+            Claims claims = obtenerTodosLosClaims(token);
+            
+            java.util.Date expiration = claims.getExpiration();
+            
+            if (expiration != null && expiration.before(new java.util.Date())) {
+                return false; // El token expiró
+            }
+            
+            return claims.getSubject() != null;
         } catch (Exception e) {
-            return false;
+            return false; // El token es inválido, alterado o no se puede parsear
         }
     }
 }

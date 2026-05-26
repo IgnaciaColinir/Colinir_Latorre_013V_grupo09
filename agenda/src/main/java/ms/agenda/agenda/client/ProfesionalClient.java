@@ -8,13 +8,13 @@ import ms.agenda.agenda.confg.FeignConfig;
 import ms.agenda.agenda.dto.response.ProfesionalResponse;
 
 @FeignClient(
-        name = "ms-profesional",
-        url = "jjdbc:mysql://mysql-db:3306/clinica_profesionales?createDatabaseIfNotExist=true",
+        name = "ms-profesionales",
+        url = "http://localhost:8092",
         configuration = FeignConfig.class
 )
 public interface ProfesionalClient {
 
-// Llama al endpoint GET /api/v1/profesionales/{rut} del microservicio de profesionales
-    @GetMapping("/api/v1/profesionales/{rut}")
+// Llama al endpoint GET /api/v1/profesionales/rut/{rut} del microservicio de profesionales
+    @GetMapping("/api/v1/profesionales/rut/{rut}")
     ProfesionalResponse obtenerProfesionalPorRut(@PathVariable("rut") String rut);
 }

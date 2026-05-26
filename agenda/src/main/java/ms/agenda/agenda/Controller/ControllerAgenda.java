@@ -18,13 +18,17 @@ import java.util.List;
 @RestController // Indica que retorna JSON automáticamente
 @RequestMapping("/api/v1/agenda") // Ruta base del controlador
 public class ControllerAgenda {
-
-@Autowired
-private ServiceAgenda agendaService;
-    @GetMapping // Endpoint GET para obtener todos
-    public ResponseEntity<List<ModelAgenda>> obtenerTodas() {
-        return ResponseEntity.ok(agendaService.obtenerTodas());
+    @GetMapping("/test-vivo")
+    public ResponseEntity<String> probarSiEstaVivo() {
+        return ResponseEntity.ok("¡SÍ, EL SERVIDOR NUEVO ESTÁ CORRIENDO AQUÍ!");
     }
+
+    @Autowired
+    private ServiceAgenda agendaService;
+        @GetMapping // Endpoint GET para obtener todos
+        public ResponseEntity<List<ModelAgenda>> obtenerTodas() {
+            return ResponseEntity.ok(agendaService.obtenerTodas());
+        }
 
     //recuerden que la url aqui seria /api/v1/pokemones/1
    @GetMapping("/{id}")
@@ -34,9 +38,7 @@ private ServiceAgenda agendaService;
     }
 
     @PostMapping
-    public ResponseEntity<AgendaResponseDTO> guardarCita(
-            @Valid @RequestBody AgendaRequestDTO request
-    ) {
+    public ResponseEntity<AgendaResponseDTO> guardarCita(@Valid @RequestBody AgendaRequestDTO request) {
         AgendaResponseDTO nuevaCita = agendaService.guardarCita(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaCita);
     }
@@ -50,28 +52,31 @@ private ServiceAgenda agendaService;
 
     @DeleteMapping("/{id}")// Endpoint DELETE
     public ResponseEntity<?> eliminar(@PathVariable int id) {
-        return ResponseEntity.ok("Eliminado");
+        System.out.println("=======> ALERTA: Postman me está pidiendo borrar el ID: " + id);
+    
+        boolean eliminado = agendaService.eliminar(id);
+        
+        if (eliminado) {
+            return ResponseEntity.ok("Eliminado de la lista");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No se pudo eliminar: El ID " + id + " no se encontró en la lista.");
+        }
     }
 
-    @GetMapping("/paciente/{idpaciente}")// Endpoint GET por paciente
+    @GetMapping("/paciente/{idPaciente}")// Endpoint GET por paciente
     public ResponseEntity<?> buscarPorPaciente(@PathVariable String idPaciente) {
-        try {
-            return ResponseEntity.ok(agendaService.obtenerPorPaciente(idPaciente));
+        
+        return ResponseEntity.ok(agendaService.obtenerPorPaciente(idPaciente));
 
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al buscar por paciente: " + e.getMessage());
-        }
+        
     }
 
     @GetMapping("/disponibilidad")// Endpoint GET solo de las citas disponibles
     public ResponseEntity<?> citasDisponibles(@RequestParam String idProfesional, @RequestParam LocalDate fecha) {
-        try {
-            return ResponseEntity.ok(agendaService.obtenerCitasDisponibles(idProfesional, fecha));
+       
+        return ResponseEntity.ok(agendaService.obtenerCitasDisponibles(idProfesional, fecha));
 
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al obtener citas disponibles: " + e.getMessage());
-        }
+       
     }
 }

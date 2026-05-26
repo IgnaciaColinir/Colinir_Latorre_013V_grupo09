@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
@@ -44,7 +46,7 @@ public class RepositoryPacientes {
     public List<ModeloPaciente> findAll() {
         return pacienteList.stream() // Convierte la lista en stream para poder aplicar operaciones
                 .sorted(Comparator.comparing(ModeloPaciente:: getRut)) // Ordena por id ascendente
-                .toList(); // Convierte el stream nuevamente a lista
+                .collect(Collectors.toList()); // Convierte el stream nuevamente a lista
 
     
     }
@@ -69,7 +71,7 @@ public class RepositoryPacientes {
     }
 
     public boolean deleteByRut(String rut) {
-        return pacienteList.removeIf(p -> p.getRut().equals(rut));
+        return pacienteList.removeIf(p -> p.getRut().trim().equalsIgnoreCase(rut.trim()));
     }
     
     public ModeloPaciente update(String rut, ModeloPaciente pacienteActualizado) {

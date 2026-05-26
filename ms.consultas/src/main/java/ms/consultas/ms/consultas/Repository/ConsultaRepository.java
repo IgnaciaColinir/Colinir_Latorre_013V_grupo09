@@ -13,8 +13,8 @@ import java.util.List;
 @Repository // Marca esta clase como repositorio (acceso a datos)
 public class ConsultaRepository {
 
-    private final List<ModeloConsulta> consultasList = new ArrayList<>();
-    private int nextId = 1;
+    private static final List<ModeloConsulta> consultasList = new ArrayList<>();
+    private static int nextId = 1;
 
     public ConsultaRepository() {
         consultasList.add(ModeloConsulta.builder()
@@ -26,8 +26,8 @@ public class ConsultaRepository {
                 .fechaConsulta(LocalDate.parse("2026-01-01"))
                 .horaConsulta(LocalTime.parse("10:00"))
                 .diagnostico("Chequeo médico")
-                .valorConsulta(50000)
-                .valorTratamiento(35000)
+                .valorConsulta(50000.0)
+                .valorTratamiento(35000.0)
                 .build());
 
         consultasList.add(ModeloConsulta.builder()
@@ -39,8 +39,8 @@ public class ConsultaRepository {
                 .fechaConsulta(LocalDate.parse("2026-03-02"))
                 .horaConsulta(LocalTime.parse("11:00"))
                 .diagnostico("Tratamiento especial")
-                .valorConsulta(100000)
-                .valorTratamiento(50000)
+                .valorConsulta(100000.)
+                .valorTratamiento(50000.)
                 .build());
     }
 
@@ -65,18 +65,19 @@ public class ConsultaRepository {
     public ModeloConsulta update(int id, ModeloConsulta consultaActualizada) {
 
         for (int i = 0; i < consultasList.size(); i++) {
+            ModeloConsulta c = consultasList.get(i);
 
-            if (consultasList.get(i).getId() == id) {
+            if (c != null && c.getId() == id) {
 
-                consultasList.get(i).setNomPaciente(consultaActualizada.getNomPaciente());
-                consultasList.get(i).setNomMedico(consultaActualizada.getNomMedico());
-                consultasList.get(i).setFechaConsulta(consultaActualizada.getFechaConsulta());
-                consultasList.get(i).setHoraConsulta(consultaActualizada.getHoraConsulta());
-                consultasList.get(i).setDiagnostico(consultaActualizada.getDiagnostico());
-                consultasList.get(i).setValorConsulta(consultaActualizada.getValorConsulta());
-                consultasList.get(i).setValorTratamiento(consultaActualizada.getValorTratamiento());
+                c.setNomPaciente(consultaActualizada.getNomPaciente());
+                c.setNomMedico(consultaActualizada.getNomMedico());
+                c.setFechaConsulta(consultaActualizada.getFechaConsulta());
+                c.setHoraConsulta(consultaActualizada.getHoraConsulta());
+                c.setDiagnostico(consultaActualizada.getDiagnostico());
+                c.setValorConsulta(consultaActualizada.getValorConsulta());
+                c.setValorTratamiento(consultaActualizada.getValorTratamiento());
 
-                return consultasList.get(i);
+                return c;
             }
         }               
    
@@ -84,23 +85,17 @@ public class ConsultaRepository {
     }
 
     public boolean deleteById(int id) {
-        return consultasList.removeIf(p -> p.getId() == id); // Elimina el elemento si el id coincide, retorna true automaticamente
+        return consultasList.removeIf(p -> p != null && p.getId() == id); // Elimina el elemento si el id coincide, retorna true automaticamente
 
 
         
     }
 
 
-    public boolean deleteByPaciente(String paciente) {
-        return consultasList.removeIf(p -> p.getNomPaciente().equalsIgnoreCase(paciente)); // Elimina el elemento si el nombre de paciente coincide, retorna true automaticamente
-
-
-        
-    }
 
     public List<ModeloConsulta> findByPaciente(String paciente) {
         return consultasList.stream() // convierte la lista a un formato legible por java asincronamente
-                .filter(p -> p.getNomPaciente().equalsIgnoreCase(paciente)) // Filtra por nombre de paciente ignorando mayúsculas/minúsculas
+                .filter(p -> p != null && p.getNomPaciente() != null && p.getNomPaciente().equalsIgnoreCase(paciente)) // Filtra por nombre de paciente ignorando mayúsculas/minúsculas
                 .sorted(Comparator.comparing(ModeloConsulta::getId)) // Ordena por id
                 .toList(); //recuerden siempre vovler a transformar el onjeto en una nueva lista
     }
@@ -108,14 +103,14 @@ public class ConsultaRepository {
     public List<ModeloConsulta> findByDate(String fechaConsulta) {
         LocalDate fechaBusqueda = LocalDate.parse(fechaConsulta);
         return consultasList.stream() // convierte la lista a un formato legible por java asincronamente
-                .filter(p -> p.getFechaConsulta().isEqual(fechaBusqueda)) // Filtra por fecha de consulta ignorando mayúsculas/minúsculas
+                .filter(p -> p != null && p.getFechaConsulta() != null && p.getFechaConsulta().isEqual(fechaBusqueda)) // Filtra por fecha de consulta ignorando mayúsculas/minúsculas
                 .sorted(Comparator.comparing(ModeloConsulta::getId)) // Ordena por id
                 .toList(); //recuerden siempre vovler a transformar el onjeto en una nueva lista
     }
 
     public List<ModeloConsulta> findByDiagnostico(String diagnostico) {
         return consultasList.stream() // convierte la lista a un formato legible por java asincronamente
-                .filter(p -> p.getDiagnostico().equalsIgnoreCase(diagnostico)) // Filtra por diagnostico ignorando mayúsculas/minúsculas
+                .filter(p -> p != null && p.getDiagnostico() != null && p.getDiagnostico().equalsIgnoreCase(diagnostico)) // Filtra por diagnostico ignorando mayúsculas/minúsculas
                 .sorted(Comparator.comparing(ModeloConsulta::getId)) // Ordena por id
                 .toList(); //recuerden siempre vovler a transformar el onjeto en una nueva lista
     }

@@ -9,6 +9,7 @@ import ms.agenda.agenda.client.PacienteClient;
 import ms.agenda.agenda.client.ProfesionalClient;
 import ms.agenda.agenda.dto.request.AgendaRequestDTO;
 import ms.agenda.agenda.dto.response.AgendaResponseDTO;
+import ms.agenda.agenda.dto.response.PacienteResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,73 +46,70 @@ public class ServiceAgenda {
     }
 
 public AgendaResponseDTO guardarCita(AgendaRequestDTO request) {
-    try {
+    
+// 1. PRIMER PASO: LLAMADA OPENFEIGN CON CAPTURA DE ERROR EXPLÍCITA
+        List<PacienteResponse> pacientes;
+        try {
+            pacientes = pacienteClient.obtenerPacientePorRut(request.getIdPaciente());
+        } catch (Exception e) {
+            // Si OpenFeign falla (401, 404, etc.), este throw corta el método e informa a Postman
+            throw new IllegalArgumentException("ERROR REAL DE FEIGN: " + e.getMessage());
+        }
+
+        if (pacientes == null || pacientes.isEmpty()) {
+            throw new IllegalArgumentException("El paciente no está autorizado para agendar o no existe.");
+        }
+
+        // 2. EXTRACCIÓN Y VALIDACIÓN DE FECHA PASADA
         LocalDate fechaCita = request.getFecha(); 
         LocalTime horaCita = request.getHora();   
 
-        // 2. VALIDACIÓN DE FECHA PASADA: (La hacemos de inmediato para ahorrar procesamiento)
         LocalDateTime fechaHoraCita = LocalDateTime.of(fechaCita, horaCita);        
         if (fechaHoraCita.isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("No se puede agendar una cita en una fecha u hora pasada.");
+            throw new IllegalArgumentException("No se puede agendar una cita en una fecha u hora pasada.");
         }
 
-        // 3. CONSULTA AL REPOSITORIO: Ahora sí le pasamos 'fechaCita' que ya es un LocalDate
+        // 3. CONSULTA DE DISPONIBILIDAD EN EL REPOSITORIO
         List<ModelAgenda> citasdelDia = agendaRepository.findByProfesionalAndFecha(
                 request.getIdProfesional(),
-                fechaCita // <-- CORRECCIÓN: Usamos la variable LocalDate parseada arriba
+                fechaCita 
         );
 
-        // 4. VALIDACIÓN DE DISPONIBILIDAD: Comparamos usando el objeto horaCita
+        // 4. COMPROBAR SI EL HORARIO ESTÁ OCUPADO
         boolean estaOcupado = citasdelDia.stream()
-                .anyMatch(cita -> cita.getHora().equals(horaCita)); // <-- CORRECCIÓN: equals con LocalTime
+                .anyMatch(cita -> cita.getHora().equals(horaCita));
 
         if (estaOcupado) {
-            throw new RuntimeException("El profesional ya tiene una cita reservada a esa hora");
+            throw new IllegalArgumentException("El profesional ya tiene una cita reservada a esa hora");
         }
 
-        // 2. Validar que la fecha y hora de la cita no sea en el pasado
-
-        if (LocalDateTime.of(request.getFecha(), request.getHora()).isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("No se puede agendar una cita en una fecha u hora pasada.");
-        }
-
-        // 3. LLAMADA OPENFEIGN: Verificar que el paciente exista mediante Feign
-        var paciente = pacienteClient.obtenerPacientePorRut(request.getIdPaciente());
-        if (paciente == null) {
-            throw new RuntimeException("El paciente no está autorizado para agendar o no existe.");
-        }
-
-        // Nota: Pasamos 'fechaCita' y 'horaCita' porque el Modelo ya maneja tipos LocalDate/LocalTime
+        // 5. CONSTRUCCIÓN DE LA NUEVA ENTIDAD
         ModelAgenda citaNueva = ModelAgenda.builder()
                 .id(request.getId())
                 .fecha(request.getFecha()) 
                 .hora(request.getHora())   
                 .idProfesional(request.getIdProfesional())
                 .idPaciente(request.getIdPaciente())
-                .estado(request.getEstado() != null ? request.getEstado() : "RESERVADA") // Estado por defecto si viene null
+                .estado(request.getEstado() != null ? request.getEstado() : "RESERVADA")
                 .build();
 
-        // 5. PERSISTENCIA
-        ModelAgenda guardado = agendaRepository.save(citaNueva);
+        // 6. PERSISTENCIA EN BASE DE DATOS
+        try {
+            ModelAgenda guardado = agendaRepository.save(citaNueva);
 
-        // 6. RETORNO: Mapeo hacia el ResponseDTO
-        // Nota: Volvemos a usar .toString() si tu DTO final espera un String de texto
-        return AgendaResponseDTO.builder()
-                .id(guardado.getId())
-                .fecha(guardado.getFecha())
-                .hora(guardado.getHora())
-                .idProfesional(guardado.getIdProfesional())
-                .idPaciente(guardado.getIdPaciente())
-                .estado(guardado.getEstado())
-                .build();
+            // 7. RESPUESTA MAPEADA AL DTO DE SALIDA
+            return AgendaResponseDTO.builder()
+                    .id(guardado.getId())
+                    .fecha(guardado.getFecha())
+                    .hora(guardado.getHora())
+                    .idProfesional(guardado.getIdProfesional())
+                    .idPaciente(guardado.getIdPaciente())
+                    .estado(guardado.getEstado())
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException("Error en la base de datos de agenda al guardar: " + e.getMessage());
+        }
 
-    } catch (RuntimeException e) {
-        // Deja pasar directamente tus mensajes controlados de negocio
-        throw e;
-    } catch (Exception e) {
-        // Captura cualquier falla de red de Feign o caídas de la base de datos
-        throw new RuntimeException("Error fatal e inesperado al registrar la cita en la agenda: " + e.getMessage());
-    }
 }
     
     public ModelAgenda actualizar(int id, ModelAgenda citaActualizada) {

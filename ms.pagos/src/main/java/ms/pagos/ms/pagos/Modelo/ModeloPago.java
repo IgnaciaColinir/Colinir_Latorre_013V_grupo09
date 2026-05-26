@@ -30,6 +30,7 @@ public class ModeloPago {
     private String metodoPago;
     @NotBlank(message = "El estado del pago es obligatorio")
     private String estado;
+    
     private LocalDateTime fechaPago;
 
 }

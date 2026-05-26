@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "ESTA_ES_UNA_CLAVE_SECRETA_DE_PRUEBA_123456";
+    private static final String SECRET_KEY = "MiClaveSuperSecretaParaLaClinicaDelDuocQueTieneQueSerLargaParaQueSeaSegura123456789";
 
     
 

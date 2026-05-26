@@ -3,6 +3,7 @@ package ms.consultas.ms.consultas.Services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import feign.FeignException;
 import ms.consultas.ms.consultas.Modelo.ModeloConsulta;
 import ms.consultas.ms.consultas.Repository.ConsultaRepository;
 import ms.consultas.ms.consultas.client.PacienteClient;
@@ -45,13 +46,7 @@ public class ConsultaService {
 
 public ConsultasResponseDTO guardarConsulta(ConsultasRequestDTO request) {
     try {
-        // 1. No pueden haber consultas con fechas futuras
-        LocalDate fecha = request.getFechaConsulta();
-        LocalTime hora = request.getHoraConsulta();
-
-        if (LocalDateTime.of(fecha, hora).isAfter(LocalDateTime.now())) {
-            throw new RuntimeException("La fecha y hora de la consulta no pueden ser futuras.");
-        }
+        
 
         // 2. Sin valores negativos
         if (request.getValorConsulta() < 0 || request.getValorTratamiento() < 0) {
@@ -59,20 +54,26 @@ public ConsultasResponseDTO guardarConsulta(ConsultasRequestDTO request) {
         }
 
         // Verificar que el paciente exista y capturar su nombre
-        String nombrePacienteCompleto;
-        PacienteResponse paciente = pacienteClient.obtenerPacientePorRut(request.getIdPaciente());
+       String nombrePacienteCompleto;
+        try {
+            PacienteResponse paciente = pacienteClient.obtenerPacientePorRut(request.getIdPaciente());
+            if (paciente == null) {
+                throw new IllegalArgumentException("El paciente no existe en el sistema.");
+            }
+            nombrePacienteCompleto = paciente.getNombre() + " " + paciente.getApellido();
 
-        if (paciente == null) {
-            throw new RuntimeException("El paciente no existe");
+        } catch (FeignException.NotFound e) {
+            throw new IllegalArgumentException("Error: El RUT de paciente " + request.getIdPaciente() + " no existe en el microservicio de Pacientes.");
+        } catch (Exception e) {
+            throw new RuntimeException("Error de comunicación con el servicio de pacientes: " + e.getMessage());
         }
 
-        nombrePacienteCompleto = paciente.getNombre() + " " + paciente.getApellido();
-
         ModeloConsulta consulta = ModeloConsulta.builder()
+                .idPaciente(request.getIdPaciente())
                 .nomPaciente(nombrePacienteCompleto) // Guardado histórico inmutable
                 .nomMedico(request.getNomMedico())
-                .fechaConsulta(fecha) // Pasamos el objeto LocalDate
-                .horaConsulta(hora)   // Pasamos el objeto LocalTime
+                .fechaConsulta(request.getFechaConsulta()) // Pasamos el objeto LocalDate
+                .horaConsulta(request.getHoraConsulta())   // Pasamos el objeto LocalTime
                 .diagnostico(request.getDiagnostico())
                 .valorConsulta(request.getValorConsulta())
                 .valorTratamiento(request.getValorTratamiento())
@@ -94,10 +95,8 @@ public ConsultasResponseDTO guardarConsulta(ConsultasRequestDTO request) {
                 .build();
 
     } catch (RuntimeException e) {
-        // Deja pasar directo tus excepciones manuales de negocio (fecha futura, paciente no existe, etc)
         throw e;
     } catch (Exception e) {
-        // Atrapa errores de red de Feign, base de datos caída o fallas técnicas del servidor
         throw new RuntimeException("Error fatal e inesperado al registrar la consulta: " + e.getMessage());
     }
 }    
@@ -117,13 +116,7 @@ public ConsultasResponseDTO guardarConsulta(ConsultasRequestDTO request) {
         }
     }
 
-    public boolean eliminarbyPaciente(String paciente) {
-        try {
-            return consultaRepository.deleteByPaciente(paciente);
-        } catch (Exception e) {
-            throw new RuntimeException("Error al eliminar consulta: " + e.getMessage());
-        }
-    }
+   
 
     public List<ModeloConsulta> buscarPorPaciente(String nomPaciente) {
         try {

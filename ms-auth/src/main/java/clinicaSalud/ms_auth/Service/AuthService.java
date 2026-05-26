@@ -43,6 +43,8 @@ public class AuthService {
         log.info("Credenciales validadas correctamente. Fabricando JWT...");
         return jwtUtil.generateToken(usuario.getUsername());
     }
+
+    
     // Método para registrar un nuevo usuario en la BD de Auth
     public String registrar(AuthRequest request) {
         log.info("Intentando registrar nuevo usuario: {}", request.getUsername());

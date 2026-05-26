@@ -13,8 +13,10 @@ public class ConsultasResponseDTO {
     private int id;
     private String nomPaciente;
     private String nomMedico;
+
     private LocalDate fechaConsulta;
     private LocalTime horaConsulta;
+    
     private String diagnostico;
     private double valorConsulta;
     private double valorTratamiento;

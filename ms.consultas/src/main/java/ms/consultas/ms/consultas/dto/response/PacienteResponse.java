@@ -13,7 +13,9 @@ public class PacienteResponse {
     private String nombre;
     private String apellido;
     private String direccion;
-    LocalDate fechaNacimiento;
+
+    private LocalDate fechaNacimiento;
+    
     private String telefono;
     private String email;
     private String prevision;

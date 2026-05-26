@@ -58,14 +58,16 @@ public class GlobalExceptionHandler {
             Exception ex,
             HttpServletRequest request
     ) {
+        String detalleError = ex.getClass().getSimpleName() + ": " + ex.getMessage();
+
         ErrorResponsep error = new ErrorResponsep(
                 LocalDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Internal Server Error",
-                "Ocurrió un error inesperado en el servidor",
+                detalleError, // <--- Ahora Postman mostrará el error técnico real aquí
                 request.getRequestURI()
         );
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-    }
+}
 }

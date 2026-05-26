@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -24,6 +25,6 @@ public class PagoRequestDTO {
     private String metodoPago;
     @NotBlank(message = "El estado del pago es obligatorio")
     private String estado;
-    @NotBlank(message = "La fecha de pago es obligatoria")
+    @NotNull(message = "La fecha de pago es obligatoria")
     LocalDateTime fechaPago;
 }

@@ -20,6 +20,7 @@ public class ControllerPago {
 
 @Autowired
 private ServicePago pagoService;
+
     @GetMapping // Endpoint GET para obtener todos
     public ResponseEntity<List<ModeloPago>> obtenerTodos() {
         return ResponseEntity.ok(pagoService.obtenerTodos());

@@ -10,12 +10,11 @@ import ms.consultas.ms.consultas.dto.response.PacienteResponse;
 // Cliente Feign para consumir el microservicio de pacientes
 @FeignClient(
         name = "ms-paciente",
-        url = "jdbc:mysql://mysql-db:3306/clinica_pacientes?createDatabaseIfNotExist=true",
-        configuration = FeignConfig.class
-)
+        url = "http://localhost:8095",
+        configuration = FeignConfig.class)
 public interface PacienteClient {
 
-    // Llama al endpoint GET /api/v1/pacientes/{rut} del microservicio de pacientes
-    @GetMapping("/api/v1/pacientes/{rut}")
+    // Llama al endpoint GET /api/v1/pacientes/rut/{rut} del microservicio de pacientes
+    @GetMapping("/api/v1/pacientes/rut/{rut}")
     PacienteResponse obtenerPacientePorRut(@PathVariable("rut") String rut);
 }

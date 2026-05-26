@@ -26,6 +26,7 @@ public class SecurityConfig {
                         //esta es la lista de endpoints que sepueden usar sin token
                         .requestMatchers("/auth/login").permitAll()
                         //esta es la lista de endpoints privados
+                        .requestMatchers("/api/v1/agenda/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

@@ -28,9 +28,8 @@ private  ServicesPaciente pacienteServices;
 
     //recuerden que la url aqui seria /api/v1/pacientes/1
    @GetMapping("/rut/{rut}")
-    public ResponseEntity<?> obtenerPorRut(@PathVariable String rut) {
-            List<ModeloPaciente> paciente = pacienteServices.obtenerPorRut(rut);
-            return ResponseEntity.ok(paciente);
+    public ResponseEntity<ModeloPaciente> obtenerPorRut(@PathVariable String rut) {
+            return ResponseEntity.ok(pacienteServices.obtenerPorRut(rut).get(0));
     }
 
     @GetMapping("/prevision/{prevision}")
@@ -56,7 +55,14 @@ private  ServicesPaciente pacienteServices;
 
     @DeleteMapping("/{rut}")// Endpoint DELETE
     public ResponseEntity<?> eliminar(@PathVariable String rut) {
-        return ResponseEntity.ok("Eliminado");
+        boolean eliminado = pacienteServices.eliminar(rut);
+    
+        if (eliminado) {
+            return ResponseEntity.ok("Eliminado con éxito");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body("No se borró nada porque el RUT no coincidió exactamente.");
+        }
     }
 
 

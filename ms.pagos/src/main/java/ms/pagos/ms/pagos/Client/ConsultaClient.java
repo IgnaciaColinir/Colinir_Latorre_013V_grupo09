@@ -9,12 +9,12 @@ import ms.pagos.ms.pagos.dto.response.ConsultasResponse;
 
 @FeignClient(
         name = "ms-consultas",
-        url = "jdbc:mysql://mysql-db:3306/clinica_consultas?createDatabaseIfNotExist=true",
+        url = "http://localhost:8098",      
         configuration = FeignConfig.class
 )
 public interface ConsultaClient {
 
-    // Llama al endpoint GET /api/v1/pacientes/{rut} del microservicio de pacientes
-    @GetMapping("/api/v1/consulta/{id}")
+    // Llama al endpoint GET /api/v1/consultas/{id} del microservicio de consultas
+    @GetMapping("/api/v1/consultas/{id}")
     ConsultasResponse obtenerConsultaPorid(@PathVariable("id") int id);
 }

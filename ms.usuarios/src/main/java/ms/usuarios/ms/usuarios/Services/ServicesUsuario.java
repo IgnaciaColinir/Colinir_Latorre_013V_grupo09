@@ -88,7 +88,8 @@ public class ServicesUsuario {
                 .password(guardado.getPassword())
                 .cargo(guardado.getCargo())
                 .build();
-
+    } catch (RuntimeException e) {
+        throw e;
     } catch (Exception e) {
         throw new RuntimeException("Error fatal e inesperado al registrar el usuario: " + e.getMessage());
     }

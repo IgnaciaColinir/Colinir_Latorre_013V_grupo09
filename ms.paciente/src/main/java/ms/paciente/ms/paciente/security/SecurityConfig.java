@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         //esta es la lista de endpoints que sepueden usar sin token
                         .requestMatchers(HttpMethod.POST,"/api/v1/pacientes").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/paciente/rut/{rut}").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/pacientes/**").permitAll()
                         //esta es la lista de endpoints privados
                         .anyRequest().authenticated()
                 )
