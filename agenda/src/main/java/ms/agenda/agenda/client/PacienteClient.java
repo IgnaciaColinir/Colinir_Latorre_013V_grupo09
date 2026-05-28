@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import ms.agenda.agenda.confg.FeignConfig;
 import ms.agenda.agenda.dto.response.PacienteResponse;
-import java.util.List;
 
 // Cliente Feign para consumir el microservicio de pacientes
 @FeignClient(
@@ -17,5 +16,5 @@ public interface PacienteClient {
 
     // Llama al endpoint GET /api/v1/pacientes/rut/{rut} del microservicio de pacientes
     @GetMapping("/rut/{rut}")
-    List<PacienteResponse> obtenerPacientePorRut(@PathVariable("rut") String rut);
+    PacienteResponse obtenerPacientePorRut(@PathVariable("rut") String rut);
 }

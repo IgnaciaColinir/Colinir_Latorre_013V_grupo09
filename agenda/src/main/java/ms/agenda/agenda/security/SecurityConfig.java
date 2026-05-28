@@ -27,6 +27,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/login").permitAll()
                         //esta es la lista de endpoints privados
                         .requestMatchers("/api/v1/agenda/**").permitAll()
+                        .requestMatchers("/api/v1/agenda/disponibilidad/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

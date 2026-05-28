@@ -59,7 +59,14 @@ private ServicesUsuario usuarioServices;
 
     @DeleteMapping("/{rut}")// Endpoint DELETE
     public ResponseEntity<?> eliminar(@PathVariable String rut) {
-        return ResponseEntity.ok("Eliminado");
+        boolean eliminado = usuarioServices.eliminar(rut);
+    
+        if (eliminado) {
+            return ResponseEntity.ok("Eliminado con éxito");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Usuario con rut " + rut + " no encontrado");
+                }
     }
 
     @GetMapping("/cargo/{cargo}")// Endpoint GET por cargo

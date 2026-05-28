@@ -1,5 +1,7 @@
 package ms.pagos.ms.pagos.Client;
 
+import java.util.List;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,5 +18,5 @@ public interface ConsultaClient {
 
     // Llama al endpoint GET /api/v1/consultas/{id} del microservicio de consultas
     @GetMapping("/api/v1/consultas/{id}")
-    ConsultasResponse obtenerConsultaPorid(@PathVariable("id") int id);
+    List<ConsultasResponse> obtenerConsultaPorid(@PathVariable("id") int id);
 }

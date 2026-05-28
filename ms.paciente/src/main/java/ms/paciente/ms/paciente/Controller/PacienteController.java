@@ -29,7 +29,13 @@ private  ServicesPaciente pacienteServices;
     //recuerden que la url aqui seria /api/v1/pacientes/1
    @GetMapping("/rut/{rut}")
     public ResponseEntity<ModeloPaciente> obtenerPorRut(@PathVariable String rut) {
-            return ResponseEntity.ok(pacienteServices.obtenerPorRut(rut).get(0));
+        List<ModeloPaciente> pacientes = pacienteServices.obtenerPorRut(rut);
+    
+        if (pacientes.isEmpty()) {
+            return ResponseEntity.notFound().build(); // Devuelve 404 si no existe
+        }
+        
+        return ResponseEntity.ok(pacientes.get(0));
     }
 
     @GetMapping("/prevision/{prevision}")

@@ -58,10 +58,12 @@ public class ServicePago {
                 throw new RuntimeException("El paciente no existe");
                 }
     
-            ConsultasResponse consulta = consultaClient.obtenerConsultaPorid(request.getIdConsulta());
-            if(consulta == null){
+            List<ConsultasResponse> consultas = consultaClient.obtenerConsultaPorid(request.getIdConsulta());
+            if(consultas == null|| consultas.isEmpty()){
                 throw new RuntimeException( "No se puede pagar, la consulta no existe");
             }
+            
+            ConsultasResponse consulta = consultas.get(0);
 
             if(request.getValorConsulta() != consulta.getValorConsulta() || 
                 request.getValorTratamiento() != consulta.getValorTratamiento()){

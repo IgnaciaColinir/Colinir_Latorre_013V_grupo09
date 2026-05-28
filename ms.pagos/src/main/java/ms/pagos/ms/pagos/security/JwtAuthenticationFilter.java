@@ -27,18 +27,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String path = request.getRequestURI();
-        if (path.startsWith("/auth/login") || path.startsWith("/api/v1/pagos")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+    String path = request.getRequestURI();
+    
+    // 1. Si es una ruta pública, dejamos pasar de inmediato y salimos del método
+    if (path.startsWith("/auth/login") || path.startsWith("/api/v1/pagos")) {
+        filterChain.doFilter(request, response);
+        return;
+    }
 
-        String authHeader = request.getHeader("Authorization");
-        String token = authHeader.substring(7);
+    String authHeader = request.getHeader("Authorization");
 
+    // 2. VALIDACIÓN CRÍTICA: Si el header es nulo o no empieza con "Bearer ", 
+    // no intentamos cortar el texto. Dejamos que Spring Security decida si rechaza o no.
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        filterChain.doFilter(request, response);
+        return;
+    }
+
+    // 3. Ahora es seguro hacer el substring porque ya validamos el "Bearer "
+    String token = authHeader.substring(7);
+
+    try {
         if (jwtService.tokenValido(token)) {
             String username = jwtService.obtenerUsername(token);
 
+            //TODO: En el futuro, reemplaza List.of() por las autoridades reales de tu token
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(username, null, List.of());
 
@@ -48,7 +61,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-
-        filterChain.doFilter(request, response);
+    } catch (Exception e) {
+        // Si el token está mal formateado o expiró, limpiamos el contexto de seguridad
+        SecurityContextHolder.clearContext();
     }
+
+    filterChain.doFilter(request, response);
+}
 }

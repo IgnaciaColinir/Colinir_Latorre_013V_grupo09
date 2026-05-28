@@ -47,7 +47,7 @@ private ConsultaService consultaService;
             return ResponseEntity.ok(actualizado);
     }
 
-   @DeleteMapping("/id/{id}")
+   @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarPorId(@PathVariable int id) {
         consultaService.eliminarbyId(id);
         return ResponseEntity.ok("Consulta con ID " + id + " eliminada correctamente.");

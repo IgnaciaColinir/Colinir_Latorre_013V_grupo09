@@ -26,7 +26,7 @@ public class ModeloPaciente {
     private String direccion;
     @NotNull(message = "La fecha de nacimiento del paciente no puede estar vacía")
     @Past(message = "La fecha de nacimiento del paciente debe ser una fecha pasada")
-    LocalDate fechaNacimiento;
+    private LocalDate fechaNacimiento;
     @NotBlank(message = "El teléfono del paciente no puede estar vacío")
     private String telefono;
     @NotBlank(message = "El email del paciente no puede estar vacío")

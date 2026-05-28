@@ -48,7 +48,7 @@ public class ServiceAgenda {
 public AgendaResponseDTO guardarCita(AgendaRequestDTO request) {
     
 // 1. PRIMER PASO: LLAMADA OPENFEIGN CON CAPTURA DE ERROR EXPLÍCITA
-        List<PacienteResponse> pacientes;
+        PacienteResponse pacientes;
         try {
             pacientes = pacienteClient.obtenerPacientePorRut(request.getIdPaciente());
         } catch (Exception e) {
@@ -56,7 +56,7 @@ public AgendaResponseDTO guardarCita(AgendaRequestDTO request) {
             throw new IllegalArgumentException("ERROR REAL DE FEIGN: " + e.getMessage());
         }
 
-        if (pacientes == null || pacientes.isEmpty()) {
+        if (pacientes == null) {
             throw new IllegalArgumentException("El paciente no está autorizado para agendar o no existe.");
         }
 

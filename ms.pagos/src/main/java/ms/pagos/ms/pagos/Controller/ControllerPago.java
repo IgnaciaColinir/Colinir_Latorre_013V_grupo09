@@ -27,7 +27,7 @@ private ServicePago pagoService;
     }
 
     //recuerden que la url aqui seria /api/v1/pagos/1
-   @GetMapping("/pagos/{id}")
+   @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPorId(@PathVariable int id) {
             List<ModeloPago> pokemon = pagoService.obtenerPorId(id);
             return ResponseEntity.ok(pokemon);
@@ -48,7 +48,14 @@ private ServicePago pagoService;
 
     @DeleteMapping("/{id}")// Endpoint DELETE
     public ResponseEntity<?> eliminar(@PathVariable int id) {
-        return ResponseEntity.ok("Eliminado");
+        boolean eliminado = pagoService.eliminar(id);
+    
+        if (eliminado) {
+            return ResponseEntity.ok("Eliminado con éxito");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body("No se borró nada porque el RUT no coincidió exactamente.");
+        }
     }
 
     @GetMapping("/consulta/{consulta}")// Endpoint GET por tipo

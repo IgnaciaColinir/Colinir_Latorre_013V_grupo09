@@ -25,6 +25,7 @@ public class ControllerAgenda {
 
     @Autowired
     private ServiceAgenda agendaService;
+
         @GetMapping // Endpoint GET para obtener todos
         public ResponseEntity<List<ModelAgenda>> obtenerTodas() {
             return ResponseEntity.ok(agendaService.obtenerTodas());
