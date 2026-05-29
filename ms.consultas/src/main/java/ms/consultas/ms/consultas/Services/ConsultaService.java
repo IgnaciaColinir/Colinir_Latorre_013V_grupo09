@@ -79,10 +79,8 @@ public ConsultasResponseDTO guardarConsulta(ConsultasRequestDTO request) {
                 .valorTratamiento(request.getValorTratamiento())
                 .build();
 
-        // 5. PERSISTENCIA
         ModeloConsulta guardado = consultaRepository.save(consulta);
 
-        // 6. RETORNO: Mapeo hacia el ResponseDTO
         return ConsultasResponseDTO.builder()
                 .id(guardado.getId())
                 .nomPaciente(guardado.getNomPaciente())
@@ -141,6 +139,21 @@ public ConsultasResponseDTO guardarConsulta(ConsultasRequestDTO request) {
         } catch (Exception e) {
             throw new RuntimeException("Error al buscar por diagnostico: " + e.getMessage());
         }
+    }
+
+    public boolean cancelado(String estado) {
+        try {
+            if(estado.equalsIgnoreCase("cancelada")) {
+                return consultaRepository.findByCancelada(estado);
+            } else {
+                return false; // Si el estado no es "cancelada", asumimos que no hay consultas canceladas
+            }
+
+            return consultaRepository.findByCancelada(estado);
+        } catch (Exception e) {            
+            throw new RuntimeException("Error al verificar estado de consulta: " + e.getMessage());
+        }
+        
     }
 
     

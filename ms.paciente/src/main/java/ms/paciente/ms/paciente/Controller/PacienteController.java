@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import ms.paciente.ms.paciente.Model.ModeloPaciente;
 import ms.paciente.ms.paciente.Services.ServicesPaciente;
 import ms.paciente.ms.paciente.dto.request.PacienteRequestDTO;
+import ms.paciente.ms.paciente.dto.response.ContactoPacienteDTO;
 import ms.paciente.ms.paciente.dto.response.PacienteResponseDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,5 +73,9 @@ private  ServicesPaciente pacienteServices;
     }
 
 
-    
+    @GetMapping("/contact/{rut}") // Endpoint GET para obtener datos de contacto
+    public ResponseEntity<ContactoPacienteDTO> obtenerDatosContacto(@PathVariable String rut) {
+        ContactoPacienteDTO contacto = pacienteServices.obtenerDatosContacto(rut);
+        return ResponseEntity.ok(contacto);
+    }
 }

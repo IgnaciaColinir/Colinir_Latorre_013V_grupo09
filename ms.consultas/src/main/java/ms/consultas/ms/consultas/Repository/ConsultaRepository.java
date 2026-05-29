@@ -115,6 +115,14 @@ public class ConsultaRepository {
                 .toList(); //recuerden siempre vovler a transformar el onjeto en una nueva lista
     }
     
+    public List<ModeloConsulta> findByCancelada(String estado) {
+        return consultasList.stream() // convierte la lista a un formato legible por java asincronamente
+                .filter(c-> c != null) // Filtra solo los que no son nulos para evitar NullPointerException
+                .filter(c-> c.getEstado() != null && c.getEstado().equalsIgnoreCase("cancelada")) // Filtra solo los que no están cancelados
+                .toList(); //recuerden siempre vovler a transformar el objeto en una nueva lista
+    }
+
+   
 
     
 }

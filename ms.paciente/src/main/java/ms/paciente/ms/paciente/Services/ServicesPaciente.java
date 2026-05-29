@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ms.paciente.ms.paciente.Model.ModeloPaciente;
 import ms.paciente.ms.paciente.Repository.RepositoryPacientes;
 import ms.paciente.ms.paciente.dto.request.PacienteRequestDTO;
+import ms.paciente.ms.paciente.dto.response.ContactoPacienteDTO;
 import ms.paciente.ms.paciente.dto.response.PacienteResponseDTO;
 
 @Service
@@ -112,5 +113,32 @@ public class ServicesPaciente {
             }
     }
 
+    public ContactoPacienteDTO obtenerDatosContacto(String rut) {
+    try {
+        List<ModeloPaciente> listaPacientes = obtenerPorRut(rut);
+        
+        // Si la lista está vacía, lanzamos el error manualmente
+        if (listaPacientes.isEmpty()) {
+            throw new RuntimeException("Paciente con RUT " + rut + " no encontrado");
+        }
+        
+        // Si no está vacía, sacamos con seguridad el paciente en la posición 0
+        ModeloPaciente paciente = listaPacientes.get(0);
+        
+        return ContactoPacienteDTO.builder()
+                .telefono(paciente.getTelefono())
+                .email(paciente.getEmail())
+                .build();
+                
+    } catch (RuntimeException e) {
+        throw e; 
+    } catch (Exception e) {
+        throw new RuntimeException("Error al obtener datos de contacto: " + e.getMessage());
+    }
+}
+
 
 }
+
+
+

@@ -89,4 +89,19 @@ private ConsultaService consultaService;
                     .body("Error al obtener consultas por diagnostico: " + e.getMessage());
         }
     }
+
+    @GetMapping("/cancelada/{estado}")
+    public ResponseEntity<?> buscarPorCancelada(@PathVariable("estado") String estado) {
+        try {
+            boolean hayCancelada = consultaService.cancelado(estado);
+            if (hayCancelada) {
+                List<ModeloConsulta> canceladas = consultaService.buscarPorCancelada(estado);
+                return ResponseEntity.ok(canceladas);
+            } else {
+                return ResponseEntity.ok("No hay consultas canceladas.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al verificar estado de consultas: " + e.getMessage());
+        }
 }
