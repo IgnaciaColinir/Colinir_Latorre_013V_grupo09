@@ -3,12 +3,14 @@ package clinicaSalud.ms_auth;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 
 import clinicaSalud.ms_auth.Model.Usuario;
 import clinicaSalud.ms_auth.Repository.UsuarioRepository;
 
 @SpringBootApplication
+@EnableDiscoveryClient //  pa encender el eurika
 public class MsAuthApplication {
 
     public static void main(String[] args) {
@@ -17,7 +19,7 @@ public class MsAuthApplication {
 
     // Datos Hardcodeados exigidos por el profe
     @Bean
-    CommandLineRunner initDatabase(UsuarioRepository repository) {
+    public CommandLineRunner initDatabase(UsuarioRepository repository) {
         return args -> {
             // Solo creamos si la base está vacía
             if (repository.count() == 0) {
