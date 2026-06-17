@@ -10,41 +10,50 @@ import org.springframework.web.bind.annotation.RestController;
 import clinicaSalud.ms_auth.Dto.AuthRequest;
 import clinicaSalud.ms_auth.Dto.LoginResponse;
 import clinicaSalud.ms_auth.Service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j; 
 
-@Slf4j // demosle color
+@Slf4j 
 @RestController
 @RequestMapping("/api/v1/auth")
+@Tag(name = "Autenticación", description = "Controlador para iniciar sesión y registrar usuarios")
 public class AuthController {
 
     @Autowired
     private AuthService authService;
 
+    @Operation(summary = "Iniciar sesión", description = "Valida credenciales y devuelve un token JWT")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login exitoso", 
+                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Credenciales incorrectas", content = @Content)
+    })
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
-        // Log nivel INFO para saber quién está intentando entrar
-        log.info("Recibiendo petición de login para el usuario: {}", request.getUsername());
-        
+        log.info("Recibiendo petición de login para: {}", request.getUsername());
         try {
             String tokenGenerado = authService.login(request);
-            
             LoginResponse response = LoginResponse.builder()
                     .token(tokenGenerado)
                     .username(request.getUsername())
                     .build();
-                    
-            // Log de éxito
-            log.info("Login exitoso. Token generado para el usuario: {}", request.getUsername());
-            
             return ResponseEntity.ok(response);
-            
         } catch (RuntimeException e) {
-            // Log nivel ERROR para registrar la falla de seguridad
-            log.error("Fallo en el intento de login: {}", e.getMessage());
+            log.error("Fallo de login: {}", e.getMessage());
             return ResponseEntity.status(401).body(e.getMessage());
         }
-    } //  Faltaba cerrar el  login aquí ////// 
+    }
 
+    @Operation(summary = "Registrar", description = "Crea un nuevo usuario en la BD")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Registrado correctamente", content = @Content),
+        @ApiResponse(responseCode = "400", description = "Usuario ya existe", content = @Content)
+    })
     @PostMapping("/register")
     public ResponseEntity<?> registrar(@RequestBody AuthRequest request) {
         try {

@@ -17,7 +17,6 @@ public class ServicioService {
     @Autowired
     private ServicioRepository repository;
 
-    // --- MÉTODOS TRADUCTORES ---
     private ServicioDTO convertirADto(Servicio servicio) {
         ServicioDTO dto = new ServicioDTO();
         dto.setIdServicio(servicio.getIdServicio());

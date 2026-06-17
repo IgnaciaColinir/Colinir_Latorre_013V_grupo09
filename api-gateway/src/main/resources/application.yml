@@ -1,0 +1,46 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: ms-auth
+          uri: lb://ms-auth
+          predicates:
+            - Path=/api/v1/auth/**
+            
+        - id: ms-servicios
+          uri: lb://ms-servicios
+          predicates:
+            - Path=/api/v1/servicios/**
+
+        - id: ms-profesionales
+          uri: lb://ms-profesionales
+          predicates:
+            - Path=/api/v1/profesionales/**
+
+        - id: ms-inventario
+          uri: lb://ms-inventario
+          predicates:
+            - Path=/api/v1/insumos/**
+
+        - id: ms-fichas
+          uri: lb://ms-fichas
+          predicates:
+            - Path=/api/v1/fichas/**
+            
+        - id: ms-paciente
+          uri: lb://ms-paciente
+          predicates:
+            - Path=/api/v1/pacientes/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

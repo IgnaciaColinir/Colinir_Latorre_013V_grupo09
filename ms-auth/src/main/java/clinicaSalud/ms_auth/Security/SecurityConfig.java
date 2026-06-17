@@ -13,17 +13,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // 1. Desactivamos la protección de formularios web (porque usamos Postman y React/Angular)
             .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequest(auth -> auth 
-            // pa dejar psar al sqagger sin token?
-            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-            
-            .requestMatchers("/api/v1/auth/login", "/api/v1/auth/registro").permitAll()
-            
-            .authorizeHttpRequests(auth -> auth
+            .authorizeHttpRequests(auth -> auth 
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/api/v1/auth/login", "/api/v1/auth/register").permitAll()
-                .anyRequest().authenticated() // Cualquier otra ruta, pedir Token obligatorio
+                .anyRequest().authenticated()
             );
             
         return http.build();

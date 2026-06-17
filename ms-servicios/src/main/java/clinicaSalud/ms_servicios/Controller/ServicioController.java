@@ -4,35 +4,49 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import clinicaSalud.ms_servicios.DTO.ServicioDTO;
 import clinicaSalud.ms_servicios.Service.ServicioService;
 
-// aca arreglé lo que dijo el profe de catalogo porque ahora ta el servicio y el DTO
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1/servicios")
+@Tag(name = "Catálogo de Servicios", description = "Operaciones del catálogo de prestaciones")
 public class ServicioController {
 
     @Autowired
     private ServicioService service; 
 
+    @Operation(summary = "Crear Servicio", description = "Agrega una nueva prestación al catálogo")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Servicio creado exitosamente", 
+                     content = @Content(schema = @Schema(implementation = ServicioDTO.class))),
+        @ApiResponse(responseCode = "500", description = "Error al crear (ej. Precio negativo)", content = @Content)
+    })
     @PostMapping
     public ResponseEntity<ServicioDTO> crear(@RequestBody ServicioDTO servicioDTO) {
         return ResponseEntity.ok(service.guardar(servicioDTO));
     }
 
+    @Operation(summary = "Listar Todos", description = "Obtiene todo el catálogo de servicios")
+    @ApiResponse(responseCode = "200", description = "Listado obtenido correctamente")
     @GetMapping
     public ResponseEntity<List<ServicioDTO>> listar() {
         return ResponseEntity.ok(service.listarTodo());
     }
 
+    @Operation(summary = "Obtener por ID", description = "Busca un servicio específico por su ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Servicio encontrado"),
+        @ApiResponse(responseCode = "500", description = "Servicio no encontrado", content = @Content)
+    })
     @GetMapping("/{id}")
     public ResponseEntity<ServicioDTO> obtener(@PathVariable Long id) {
         return ResponseEntity.ok(service.obtenerPorId(id));
