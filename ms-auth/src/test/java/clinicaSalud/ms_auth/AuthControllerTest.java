@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import clinicaSalud.ms_auth.Controller.AuthController;
 import clinicaSalud.ms_auth.Dto.AuthRequest;
 import clinicaSalud.ms_auth.Security.JwtUtil;
 import clinicaSalud.ms_auth.Service.AuthService;

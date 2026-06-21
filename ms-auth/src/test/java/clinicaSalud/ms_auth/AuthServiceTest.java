@@ -17,6 +17,7 @@ import clinicaSalud.ms_auth.Dto.AuthRequest;
 import clinicaSalud.ms_auth.Model.Usuario;
 import clinicaSalud.ms_auth.Repository.UsuarioRepository;
 import clinicaSalud.ms_auth.Security.JwtUtil;
+import clinicaSalud.ms_auth.Service.AuthService;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
