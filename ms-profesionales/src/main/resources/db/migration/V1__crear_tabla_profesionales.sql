@@ -1,0 +1,9 @@
+CREATE TABLE profesionales (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    rut VARCHAR(20) NOT NULL UNIQUE,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    especialidad VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    telefono VARCHAR(20) NOT NULL
+);

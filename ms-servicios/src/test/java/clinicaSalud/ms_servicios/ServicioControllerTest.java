@@ -38,6 +38,7 @@ public class ServicioControllerTest {
 
     @MockBean
     private JwtFilter jwtFilter;
+    
     @MockBean
     private JwtUtil jwtUtil;
 
@@ -51,17 +52,19 @@ public class ServicioControllerTest {
         dto = new ServicioDTO();
         dto.setIdServicio(1L);
         dto.setNombre("Ecotomografía");
+        dto.setDescripcion("Examen de imagen");
         dto.setPrecio(20000);
+        dto.setRequiereAyuno(true);
     }
 
     @Test
-    void crear_RetornaOk() throws Exception {
+    void crear_RetornaCreated() throws Exception {
         when(servicioService.guardar(any(ServicioDTO.class))).thenReturn(dto);
 
         mockMvc.perform(post("/api/v1/servicios")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated()) // 201 Created
                 .andExpect(jsonPath("$.nombre").value("Ecotomografía"));
     }
 

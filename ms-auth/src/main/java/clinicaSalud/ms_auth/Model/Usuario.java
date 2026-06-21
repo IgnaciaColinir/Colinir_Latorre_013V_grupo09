@@ -1,23 +1,15 @@
 package clinicaSalud.ms_auth.Model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 import lombok.Data;
 
-@Entity
+@Table("usuario") // Anotación de Spring Data JDBC, no de JPA
 @Data
 public class Usuario {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id // Importante: org.springframework.data.annotation.Id
     private Long id;
-    
-    @Column(unique = true)
     private String username;
-    
     private String password;
-    
-    private String rol; // Ej: ADMIN o MEDICO sin tildes porsiacasoo
+    private String rol;
 }

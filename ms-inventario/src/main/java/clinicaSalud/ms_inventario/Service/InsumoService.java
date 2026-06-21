@@ -46,9 +46,9 @@ public class InsumoService {
     }
 
     public InsumoDTO guardar(InsumoDTO dto) {
-        // Regla de Negocio: El stock no puede ser negativo
-        if (dto.getStockActual() < 0) {
-            throw new RuntimeException("Error: El stock de un insumo no puede ser menor a 0.");
+        // Regla de Negocio: El stock no puede ser negativo (Reforzado aquí además del DTO)
+        if (dto.getStockActual() < 0 || dto.getStockMinimo() < 0) {
+            throw new IllegalArgumentException("Error: El stock de un insumo no puede ser menor a 0.");
         }
         Insumo guardado = repository.save(convertirAModel(dto));
         return convertirADTO(guardado);

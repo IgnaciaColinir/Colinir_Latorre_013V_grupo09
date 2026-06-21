@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8000
 
 spring:
   application:
@@ -9,32 +9,39 @@ spring:
       discovery:
         locator:
           enabled: true
+          lower-case-service-id: true
       routes:
+        # 1. MS-AUTH
         - id: ms-auth
           uri: lb://ms-auth
           predicates:
             - Path=/api/v1/auth/**
             
+        # 2. MS-SERVICIOS
         - id: ms-servicios
           uri: lb://ms-servicios
           predicates:
             - Path=/api/v1/servicios/**
 
+        # 3. MS-PROFESIONALES
         - id: ms-profesionales
           uri: lb://ms-profesionales
           predicates:
             - Path=/api/v1/profesionales/**
 
+        # 4. MS-INVENTARIO
         - id: ms-inventario
           uri: lb://ms-inventario
           predicates:
             - Path=/api/v1/insumos/**
 
+        # 5. MS-FICHAS
         - id: ms-fichas
           uri: lb://ms-fichas
           predicates:
             - Path=/api/v1/fichas/**
             
+        # 6. MS-PACIENTE (Ignacia)
         - id: ms-paciente
           uri: lb://ms-paciente
           predicates:

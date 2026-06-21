@@ -3,7 +3,7 @@ package clinicaSalud.ms_fichas.Service;
 import clinicaSalud.ms_fichas.DTO.FichaDTO;
 import clinicaSalud.ms_fichas.Model.Ficha;
 import clinicaSalud.ms_fichas.Repository.FichaRepository;
-import clinicaSalud.ms_fichas.feign.PacienteFeignClient; // <-- Importamos tu teléfono
+import clinicaSalud.ms_fichas.feign.PacienteFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,6 @@ public class FichaService {
     @Autowired
     private FichaRepository repository;
 
-    // aca llamamos al ms-paciente para traer los datos del paciente y pegarlos a la ficha, pero sin que el ms-paciente tenga que saber nada de las fichas, gracias a FeignClient
     @Autowired
     private PacienteFeignClient pacienteFeignClient;
 
@@ -41,7 +40,17 @@ public class FichaService {
     }
 
     public FichaDTO guardar(FichaDTO dto) {
-        // Regla de Negocio: Autocompletar campos críticos vacíos
+        // REGLA DE NEGOCIO CRÍTICA (Evaluación): Validar que el paciente exista
+        try {
+            Object pacienteValido = pacienteFeignClient.obtenerPacientePorRut(dto.getRutPaciente());
+            if (pacienteValido == null) {
+                throw new IllegalArgumentException("Error: El RUT ingresado no existe en el sistema de pacientes.");
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error conectando con el servicio de pacientes. No se puede crear la ficha sin validar el RUT.");
+        }
+
+        // Regla de Negocio 2: Autocompletar campos
         if (dto.getAlergias() == null || dto.getAlergias().isBlank()) {
             dto.setAlergias("Ninguna registrada");
         }
@@ -56,19 +65,16 @@ public class FichaService {
 
         Object datosPaciente = null;
         try {
-            // Si el ms-paciente de ella está encendido en el 8095, nos pasa los datos
             datosPaciente = pacienteFeignClient.obtenerPacientePorRut(rut);
         } catch (Exception e) {
-            // Si el ms-paciente de ella está apagado, no explota tu sistema, solo avisa
             System.out.println("Aviso: No se pudo conectar con ms-paciente para el RUT " + rut);
         }
 
         for (Ficha f : fichas) {
             FichaDTO dto = convertirADto(f);
-            dto.setPaciente(datosPaciente); // ¡Le pegamos los datos que nos mandó la Nacha!
+            dto.setPaciente(datosPaciente);
             dtos.add(dto);
         }
-        
         return dtos;
     }
 }

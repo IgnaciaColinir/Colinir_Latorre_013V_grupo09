@@ -18,7 +18,6 @@ public class ServicesProfesional {
     @Autowired
     private RepositoryProfesionales profesionalesRepository;
 
-    // Método traductor para no repetir código 
     private ProfesionalResponseDTO convertirADTO(ModeloProfesional modelo) {
         return ProfesionalResponseDTO.builder()
                 .rut(modelo.getRut())
@@ -37,11 +36,9 @@ public class ServicesProfesional {
     }
 
     public ProfesionalResponseDTO obtenerPorRut(String rut) {
-        Optional<ModeloProfesional> profesional = profesionalesRepository.findById(rut);
-        if (profesional.isEmpty()) {
-            throw new RuntimeException("Error: Profesional no encontrado con el RUT: " + rut);
-        }
-        return convertirADTO(profesional.get());
+        ModeloProfesional profesional = profesionalesRepository.findByRut(rut)
+                .orElseThrow(() -> new IllegalArgumentException("Error: Profesional no encontrado con el RUT: " + rut));
+        return convertirADTO(profesional);
     }
 
     public List<ProfesionalResponseDTO> buscarPorEspecialidad(String especialidad) {
@@ -51,6 +48,11 @@ public class ServicesProfesional {
     }
     
     public ProfesionalResponseDTO guardar(ProfesionalRequestDTO request) {
+        // Regla de Negocio: No permitir duplicados de RUT
+        if (profesionalesRepository.existsByRut(request.getRut())) {
+            throw new IllegalArgumentException("Error: Ya existe un profesional registrado con el RUT: " + request.getRut());
+        }
+
         ModeloProfesional profesional = ModeloProfesional.builder()
                 .rut(request.getRut())
                 .nombre(request.getNombre())
@@ -65,13 +67,9 @@ public class ServicesProfesional {
     }
     
     public ProfesionalResponseDTO actualizar(String rut, ProfesionalRequestDTO profesionalActualizado) {
-        Optional<ModeloProfesional> existente = profesionalesRepository.findById(rut);
+        ModeloProfesional profesionalOriginal = profesionalesRepository.findByRut(rut)
+                .orElseThrow(() -> new IllegalArgumentException("Profesional no encontrado con el RUT: " + rut));
         
-        if (existente.isEmpty()) {
-            throw new RuntimeException("Profesional no encontrado con el RUT: " + rut);
-        }
-        
-        ModeloProfesional profesionalOriginal = existente.get();
         profesionalOriginal.setNombre(profesionalActualizado.getNombre());
         profesionalOriginal.setApellido(profesionalActualizado.getApellido());
         profesionalOriginal.setEspecialidad(profesionalActualizado.getEspecialidad());
@@ -83,9 +81,9 @@ public class ServicesProfesional {
     }
 
     public void eliminar(String rut) {
-        if (!profesionalesRepository.existsById(rut)) {
-            throw new RuntimeException("Error al eliminar: Profesional no encontrado");
-        }
-        profesionalesRepository.deleteById(rut);
+        ModeloProfesional profesional = profesionalesRepository.findByRut(rut)
+                .orElseThrow(() -> new IllegalArgumentException("Error al eliminar: Profesional no encontrado"));
+        
+        profesionalesRepository.delete(profesional);
     }
 }

@@ -39,12 +39,16 @@ public class ServicioServiceTest {
         modelo = new Servicio();
         modelo.setIdServicio(1L);
         modelo.setNombre("Ecotomografía");
+        modelo.setDescripcion("Examen de imagen");
         modelo.setPrecio(20000);
+        modelo.setRequiereAyuno(true);
 
         dto = new ServicioDTO();
         dto.setIdServicio(1L);
         dto.setNombre("Ecotomografía");
+        dto.setDescripcion("Examen de imagen");
         dto.setPrecio(20000);
+        dto.setRequiereAyuno(true);
     }
 
     @Test
@@ -62,7 +66,7 @@ public class ServicioServiceTest {
     void guardar_PrecioNegativo_LanzaExcepcion() {
         dto.setPrecio(-5000);
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> service.guardar(dto));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> service.guardar(dto));
         assertEquals("Error: El precio no puede ser negativo", ex.getMessage());
         verify(repository, never()).save(any(Servicio.class));
     }
@@ -74,5 +78,13 @@ public class ServicioServiceTest {
         ServicioDTO resultado = service.obtenerPorId(1L);
 
         assertEquals(20000, resultado.getPrecio());
+    }
+
+    @Test
+    void obtenerPorId_NoEncontrado_LanzaExcepcion() {
+        when(repository.findById(99L)).thenReturn(Optional.empty());
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> service.obtenerPorId(99L));
+        assertEquals("Atención: El servicio con ID 99 no existe en nuestros registros.", ex.getMessage());
     }
 }

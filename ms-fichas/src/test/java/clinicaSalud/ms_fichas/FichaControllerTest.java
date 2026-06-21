@@ -27,7 +27,7 @@ import clinicaSalud.ms_fichas.Security.JwtUtil;
 import clinicaSalud.ms_fichas.Service.FichaService;
 
 @WebMvcTest(FichaController.class)
-@AutoConfigureMockMvc(addFilters = false) // Apagamos el filtro JWT para el test
+@AutoConfigureMockMvc(addFilters = false) 
 public class FichaControllerTest {
 
     @Autowired
@@ -36,9 +36,9 @@ public class FichaControllerTest {
     @MockBean
     private FichaService fichaService;
 
-    // Tenemos que Mockear estos dos para que el contexto de Spring Security no explote
     @MockBean
     private JwtFilter jwtFilter;
+    
     @MockBean
     private JwtUtil jwtUtil;
 
@@ -51,6 +51,9 @@ public class FichaControllerTest {
     void setUp() {
         dto = new FichaDTO();
         dto.setRutPaciente("123-4");
+        dto.setTipoSangre("O+");
+        dto.setAntecedentesFamiliares("Nada");
+        dto.setAlergias("Mani");
     }
 
     @Test

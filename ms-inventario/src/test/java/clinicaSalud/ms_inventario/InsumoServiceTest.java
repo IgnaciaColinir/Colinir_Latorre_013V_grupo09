@@ -35,11 +35,16 @@ public class InsumoServiceTest {
         insumoModel = new Insumo();
         insumoModel.setIdInsumo(1L);
         insumoModel.setNombre("Gasa");
+        insumoModel.setCategoria("Insumo Médico");
         insumoModel.setStockActual(10);
+        insumoModel.setStockMinimo(5);
 
         insumoDTO = new InsumoDTO();
         insumoDTO.setIdInsumo(1L);
         insumoDTO.setNombre("Gasa");
+        insumoDTO.setCategoria("Insumo Médico");
+        insumoDTO.setStockActual(10);
+        insumoDTO.setStockMinimo(5);
     }
 
     @Test
@@ -59,8 +64,7 @@ public class InsumoServiceTest {
 
     @Test
     void guardar_Exitoso() {
-        // GIVEN: Stock válido mayor a 0
-        insumoDTO.setStockActual(5);
+        // GIVEN: Stock válido mayor o igual a 0
         when(repository.save(any(Insumo.class))).thenReturn(insumoModel);
 
         // WHEN
@@ -77,8 +81,8 @@ public class InsumoServiceTest {
         // GIVEN: Stock negativo (rompe la regla de negocio)
         insumoDTO.setStockActual(-5);
 
-        // WHEN & THEN: Esperamos que lance el RuntimeException
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        // WHEN & THEN: Esperamos que lance IllegalArgumentException
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             insumoService.guardar(insumoDTO);
         });
         
