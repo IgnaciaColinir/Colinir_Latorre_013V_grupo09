@@ -1,5 +1,7 @@
 package ms.consultas.ms.consultas.client;
 
+import java.util.List;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,5 +19,8 @@ public interface ProfesionalClient {
     // Llama al endpoint GET /api/v1/profesionales/rut/{rut} del microservicio de profesionales
     @GetMapping("/api/v1/profesionales/rut/{rut}")
     ProfesionalResponse obtenerProfesionalPorRut(@PathVariable("rut") String rut);
+    
+    @GetMapping("/api/v1/profesionales")
+    List<ProfesionalResponse> obtenerTodos();
 
 }

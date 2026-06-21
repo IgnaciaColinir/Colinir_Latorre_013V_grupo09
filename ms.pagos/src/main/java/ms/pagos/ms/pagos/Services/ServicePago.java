@@ -16,106 +16,108 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import javax.management.RuntimeErrorException;
 
 
 @Service // Marca esta clase como capa de lógica de negocio
 public class ServicePago {
-
     @Autowired
     private RepositoryPago pagoRepository;
 
     @Autowired
     private PacienteClient pacienteClient;
-    
+
     @Autowired
     private ConsultaClient consultaClient;
 
-    public List<ModeloPago> obtenerTodos() {
+    private PagoResponseDTO convertirADto(ModeloPago pago) {
+        return PagoResponseDTO.builder()
+                .id(pago.getId())
+                .idConsulta(pago.getIdConsulta())
+                .idPaciente(pago.getIdPaciente())
+                .valorConsulta(pago.getValorConsulta())
+                .valorTratamiento(pago.getValorTratamiento())
+                .montoTotal(pago.getMontoTotal())
+                .metodoPago(pago.getMetodoPago())
+                .estado(pago.getEstado())
+                .fechaPago(pago.getFechaPago())
+                .build();
+    }
+
+    public List<PagoResponseDTO> obtenerTodos() {
         try {
-            return pagoRepository.findAll();
+            List<ModeloPago> pagos = pagoRepository.findAll();
+            return pagos.stream().map(this::convertirADto).toList();
         } catch (Exception e) {
             throw new RuntimeException("Error al obtener pagos: " + e.getMessage());
         }
     }
 
-    public List<ModeloPago> obtenerPorId(int id) {
+    public PagoResponseDTO obtenerPorId(int id) {
         try {
-            return pagoRepository.findById(id);
+            ModeloPago pago = pagoRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Pago con ID " + id + " no encontrado"));
+            return convertirADto(pago);
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error al buscar pago: " + e.getMessage());
         }
     }
 
     public PagoResponseDTO guardarPago(PagoRequestDTO request) {
-        try{
-
-
-            //1. verifica si hay paciente
+        try {
+            // 1. Verifica si hay paciente
             PacienteResponse paciente = pacienteClient.obtenerPacientePorRut(request.getIdPaciente());
-
-            if(paciente == null){
+            if (paciente == null) {
                 throw new RuntimeException("El paciente no existe");
-                }
+            }
     
+            // Verificar consulta
             List<ConsultasResponse> consultas = consultaClient.obtenerConsultaPorid(request.getIdConsulta());
-            if(consultas == null|| consultas.isEmpty()){
-                throw new RuntimeException( "No se puede pagar, la consulta no existe");
+            if (consultas == null || consultas.isEmpty()) {
+                throw new RuntimeException("No se puede pagar, la consulta no existe");
             }
             
             ConsultasResponse consulta = consultas.get(0);
 
-            if(request.getValorConsulta() != consulta.getValorConsulta() || 
-                request.getValorTratamiento() != consulta.getValorTratamiento()){
-                    throw new RuntimeException("Inconsistencia, los valores no coinciden con el costo real de la consulta");
-                }
+            // Validar consistencia de montos
+            if (request.getValorConsulta() != consulta.getValorConsulta() || 
+                request.getValorTratamiento() != consulta.getValorTratamiento()) {
+                throw new RuntimeException("Inconsistencia, los valores no coinciden con el costo real de la consulta");
+            }
 
-
-            
-            // 2. Validacion de estado
-            Optional<ModeloPago> pagoExistente = pagoRepository.findByConsulta(request.getIdConsulta()).stream().findFirst();
+            // 2. Validacion de estado (Sincronizado con findByIdConsulta del repositorio)
+            Optional<ModeloPago> pagoExistente = pagoRepository.findByIdConsulta(request.getIdConsulta()).stream().findFirst();
 
             if (pagoExistente.isPresent()) {
                 String estadoActual = pagoExistente.get().getEstado();
             
-        
-                // Si ya está pagado, no permitimos hacer nada más
                 if (estadoActual.equalsIgnoreCase("Pagado")) {
                     throw new RuntimeException("Ya existe un pago registrado e inmutable para esta consulta.");
-                    }
+                }
         
-                // Si está cancelado, tampoco deberías poder operarlo de nuevo
                 if (estadoActual.equalsIgnoreCase("Cancelado")) {
                     throw new RuntimeException("No se puede procesar un pago para una consulta cancelada.");
-                    }
+                }
             }
             
-            
-
-   
             // 3. Calcular el monto total
             double totalCalculado = request.getValorConsulta() + request.getValorTratamiento();
 
-
-
-            // 4. Evaluar el estado que viene en el Request (Evitamos NullPointerException usando "Pagado".equals)
+            // 4. Evaluar el estado que viene en el Request
             String estadoFinal = request.getEstado();
             if (estadoFinal == null || estadoFinal.isEmpty()) {
-            estadoFinal = "Pendiente"; // Estado por defecto si no envían nada
+                estadoFinal = "Pendiente"; 
             }
 
-
-
-            //5.Metodo de pago
+            // 5. Metodo de pago
             String metodo = request.getMetodoPago().toUpperCase();
-            if (!metodo.equals("EFECTIVO")&& !metodo.equals("DEBITO")&&
-             !metodo.equals("CREDITO") && !metodo.equals("TRANSFERENCIA")){
+            if (!metodo.equals("EFECTIVO") && !metodo.equals("DEBITO") &&
+                !metodo.equals("CREDITO") && !metodo.equals("TRANSFERENCIA")) {
                 throw new RuntimeException("Metodo de pago no permitido por la clinica");
-             }
+            }
 
-             
-
-            // 4. Mapear al modelo con el estado dinámico
+            // 6. Mapear al modelo
             ModeloPago nuevopago = ModeloPago.builder()
                 .idConsulta(request.getIdConsulta())
                 .idPaciente(request.getIdPaciente())
@@ -123,40 +125,36 @@ public class ServicePago {
                 .valorTratamiento(request.getValorTratamiento())
                 .montoTotal(totalCalculado)
                 .metodoPago(request.getMetodoPago())
-                .estado(estadoFinal) // <-- Aquí usamos el estado dinámico validado
+                .estado(estadoFinal) 
                 .fechaPago(LocalDateTime.now())
                 .build();
 
             ModeloPago pagoguardado = pagoRepository.save(nuevopago);
 
-            // 5. Retornar el ResponseDTO estructurado con tus Builders
-            return PagoResponseDTO.builder()
-                .id(pagoguardado.getId())
-                .idConsulta(pagoguardado.getIdConsulta())
-                .idPaciente(pagoguardado.getIdPaciente())
-                .valorConsulta(pagoguardado.getValorConsulta())
-                .valorTratamiento(pagoguardado.getValorTratamiento())
-                .montoTotal(pagoguardado.getMontoTotal())
-                .metodoPago(pagoguardado.getMetodoPago())
-                .estado(pagoguardado.getEstado())
-                .fechaPago(pagoguardado.getFechaPago())
-                .build();
+            return convertirADto(pagoguardado);
                 
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-                throw new RuntimeException("Error fatal al registrar el estado del pago: " + e.getMessage());
-            }
-        
-      
+            throw new RuntimeException("Error fatal al registrar el estado del pago: " + e.getMessage());
+        }
     }
     
-                
-
-       
-    public ModeloPago actualizar(int id, ModeloPago pago) {
+    // 💡 CORREGIDO: Reescribido usando persistencia limpia de JPA (.save) y DTOs
+    public PagoResponseDTO actualizar(int id, PagoRequestDTO request) {
         try {
-            return pagoRepository.update(id, pago);
+            ModeloPago pagoExistente = pagoRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Pago con ID " + id + " no encontrado"));
+
+            pagoExistente.setMetodoPago(request.getMetodoPago());
+            if (request.getEstado() != null) {
+                pagoExistente.setEstado(request.getEstado());
+            }
+
+            ModeloPago pagoActualizado = pagoRepository.save(pagoExistente);
+            return convertirADto(pagoActualizado);
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error al actualizar pago: " + e.getMessage());
         }
@@ -164,15 +162,20 @@ public class ServicePago {
 
     public boolean eliminar(int id) {
         try {
-            return pagoRepository.deleteById(id);
+            if (pagoRepository.existsById(id)) {
+                pagoRepository.deleteById(id);
+                return true;
+            }
+            return false;
         } catch (Exception e) {
             throw new RuntimeException("Error al eliminar pago: " + e.getMessage());
         }
     }
 
-    public List<ModeloPago> buscarPorConsulta(int idconsulta) {
+    public List<PagoResponseDTO> buscarPorConsulta(int idconsulta) {
         try {
-            return pagoRepository.findByConsulta(idconsulta);
+            List<ModeloPago> pagos = pagoRepository.findByIdConsulta(idconsulta);
+            return pagos.stream().map(this::convertirADto).toList();
         } catch (Exception e) {
             throw new RuntimeException("Error al buscar por consulta: " + e.getMessage());
         }

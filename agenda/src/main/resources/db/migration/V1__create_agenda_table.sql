@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS agenda (
+    id INT NOT NULL AUTO_INCREMENT,
+    fecha DATE NOT NULL,
+    hora TIME NOT NULL,
+    idProfesional VARCHAR(150) NOT NULL,
+    idPaciente VARCHAR(150) NOT NULL,
+    estado VARCHAR(50) NOT NULL,
+
+    PRIMARY KEY (id)
+);

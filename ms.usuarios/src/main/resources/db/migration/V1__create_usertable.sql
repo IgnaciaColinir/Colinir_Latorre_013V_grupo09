@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS usuario (
+    rut VARCHAR(13) NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(150) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    clave VARCHAR(255) NOT NULL,
+    CONSTRAINT pk_usuario PRIMARY KEY (rut)
+);

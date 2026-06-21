@@ -19,4 +19,7 @@ public interface ConsultaClient {
     // Llama al endpoint GET /api/v1/consultas/{id} del microservicio de consultas
     @GetMapping("/api/v1/consultas/{id}")
     List<ConsultasResponse> obtenerConsultaPorid(@PathVariable("id") int id);
+
+    @GetMapping("/api/v1/consultas")
+    List<ConsultasResponse> obtenerTodos();
 }

@@ -161,7 +161,7 @@ services:
   # ==========================================
   mysql-usuario:
     image: mysql:8.0
-    container_name: mysql-usuario
+    container_name: mysql-usuarios
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -170,7 +170,7 @@ services:
 
   ms-usuario:
     build:
-      context: ./ms.usuario
+      context: ./ms.usuarios
     container_name: ms-usuario
     restart: always
     depends_on:

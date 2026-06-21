@@ -102,6 +102,47 @@
 			<version>0.12.6</version>
 			<scope>runtime</scope>
 		</dependency>
+
+
+		<!-- PASO GUIA 3.1.7: Dependencia de Mockito para crear mocks en pruebas unitarias -->
+		<!-- Mockito ya viene incluido dentro de spring-boot-starter-test, pero se puede declarar explicitamente -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- PASO GUIA 3.1.7: Motor de JUnit 5 para ejecutar pruebas unitarias -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- PASO GUIA 3.1.7: Base de datos H2 embebida para ejecutar tests sin necesidad de MySQL -->
+		<!-- H2 se activa solo en el scope 'test'. Permite que las pruebas unitarias -->
+		<!-- corran en cualquier maquina sin instalar ni configurar un servidor MySQL. -->
+		<!-- Si los alumnos desean usar MySQL exclusivamente, pueden quitar esta dependencia. -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- PASO GUIA 3.1.6: Dependencia de DataFaker para generar datos falsos de prueba -->
+		<!-- DataFaker permite crear nombres, correos, carreras, salas y reservas de forma automatica -->
+		<dependency>
+			<groupId>net.datafaker</groupId>
+			<artifactId>datafaker</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+
+		<!-- PASO 1: Dependencia de SpringDoc OpenAPI para generar documentacion Swagger/UI automatica -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.6.0</version>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

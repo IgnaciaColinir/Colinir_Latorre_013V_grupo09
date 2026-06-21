@@ -1,5 +1,7 @@
 package ms.agenda.agenda.client;
 
+import java.util.List;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,4 +19,7 @@ public interface PacienteClient {
     // Llama al endpoint GET /api/v1/pacientes/rut/{rut} del microservicio de pacientes
     @GetMapping("/rut/{rut}")
     PacienteResponse obtenerPacientePorRut(@PathVariable("rut") String rut);
+
+    @GetMapping("/api/v1/pacientes")
+    List<PacienteResponse> obtenerTodos();
 }
