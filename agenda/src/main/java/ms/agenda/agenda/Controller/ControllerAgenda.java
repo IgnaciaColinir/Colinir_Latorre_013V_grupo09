@@ -1,7 +1,6 @@
 package ms.agenda.agenda.Controller;
 
 import jakarta.validation.Valid;
-import ms.agenda.agenda.Model.ModelAgenda;
 import ms.agenda.agenda.Services.ServiceAgenda;
 import ms.agenda.agenda.dto.request.AgendaRequestDTO;
 import ms.agenda.agenda.dto.response.AgendaResponseDTO;

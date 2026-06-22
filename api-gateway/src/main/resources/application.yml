@@ -6,41 +6,143 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns:
+              - http://localhost:*
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: false
       discovery:
         locator:
-          enabled: true
+          enabled: true # Habilita la localización dinámica por Eureka
+      
+      # ---------------------------------------------------
+      # ENRUTAMIENTO DE TODOS TUS MICROSERVICIOS DE SALUD
+      # ---------------------------------------------------
       routes:
+        # 1. MS-AUTH
         - id: ms-auth
           uri: lb://ms-auth
           predicates:
             - Path=/api/v1/auth/**
-            
-        - id: ms-servicios
-          uri: lb://ms-servicios
-          predicates:
-            - Path=/api/v1/servicios/**
 
-        - id: ms-profesionales
-          uri: lb://ms-profesionales
+        # 2. MS-USUARIOS
+        - id: ms-usuarios
+          uri: lb://ms-usuarios
           predicates:
-            - Path=/api/v1/profesionales/**
+            - Path=/api/v1/usuarios/**
 
-        - id: ms-inventario
-          uri: lb://ms-inventario
-          predicates:
-            - Path=/api/v1/insumos/**
-
-        - id: ms-fichas
-          uri: lb://ms-fichas
-          predicates:
-            - Path=/api/v1/fichas/**
-            
+        # 3. MS-PACIENTE
         - id: ms-paciente
           uri: lb://ms-paciente
           predicates:
             - Path=/api/v1/pacientes/**
 
+        # 4. MS-PROFESIONALES
+        - id: ms-profesionales
+          uri: lb://ms-profesionales
+          predicates:
+            - Path=/api/v1/profesionales/**
+
+        # 5. AGENDA
+        - id: agenda
+          uri: lb://agenda
+          predicates:
+            - Path=/api/v1/agenda/**
+
+        # 6. MS-CONSULTAS
+        - id: ms-consultas
+          uri: lb://ms-consultas
+          predicates:
+            - Path=/api/v1/consultas/**
+
+        # 7. MS-FICHAS
+        - id: ms-fichas
+          uri: lb://ms-fichas
+          predicates:
+            - Path=/api/v1/fichas/**
+
+        # 8. MS-SERVICIOS
+        - id: ms-servicios
+          uri: lb://ms-servicios
+          predicates:
+            - Path=/api/v1/servicios/**
+
+        # 9. MS-INVENTARIO
+        - id: ms-inventario
+          uri: lb://ms-inventario
+          predicates:
+            - Path=/api/v1/inventario/**
+
+        # 10. MS-PAGOS
+        - id: ms-pagos
+          uri: lb://ms-pagos
+          predicates:
+            - Path=/api/v1/pagos/**
+
+        # ---------------------------------------------------
+        # RUTAS DINÁMICAS PARA AGREGAR SWAGGER/OPENAPI DOCS
+        # ---------------------------------------------------
+        - id: openapi-docs
+          uri: lb://
+          predicates:
+            - Path=/api-docs/**
+          filters:
+            - SetPath=/v3/api-docs
+
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+# ---------------------------------------------------
+# AGREGACIÓN CENTRALIZADA DE SWAGGER UI
+# ---------------------------------------------------
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    disable-swagger-default-url: true
+    urls-primary-name: ms-auth
+    urls:
+      - name: ms-auth
+        url: /api-docs/ms-auth
+      - name: ms-usuarios
+        url: /api-docs/ms-usuarios
+      - name: ms-paciente
+        url: /api-docs/ms-paciente
+      - name: ms-profesionales
+        url: /api-docs/ms-profesionales
+      - name: agenda
+        url: /api-docs/agenda
+      - name: ms-consultas
+        url: /api-docs/ms-consultas
+      - name: ms-fichas
+        url: /api-docs/ms-fichas
+      - name: ms-servicios
+        url: /api-docs/ms-servicios
+      - name: ms-inventario
+        url: /api-docs/ms-inventario
+      - name: ms-pagos
+        url: /api-docs/ms-pagos

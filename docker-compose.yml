@@ -1,6 +1,38 @@
 services:
   # ==========================================
-  # 1. AUTH
+  # SERVIDOR DE DESCUBRIMIENTO (EUREKA)
+  # ==========================================
+  eureka-server:
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    restart: always
+    ports:
+      - "8761:8761"
+    networks:
+      - hospital-net
+
+  # ==========================================
+  # API GATEWAY
+  # ==========================================
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    restart: always
+    depends_on:
+      - eureka-server
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8080:8080"
+    networks:
+      - hospital-net
+
+  # ==========================================
+  # BASES DE DATOS (MySQL)
   # ==========================================
   mysql-auth:
     image: mysql:8.0
@@ -8,258 +40,384 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clinica_auth
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
     ports:
       - "3306:3306"
-      
-  ms-auth:
-    build:
-      context: ./ms-auth
-    container_name: ms-auth
-    restart: always
-    depends_on:
-      - mysql-auth
-    ports:
-      - "8090:8090"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-auth:3306/clinica_auth?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
+    volumes:
+      - mysql_auth_data:/var/lib/mysql
+    networks:
+      - hospital-net
 
-  # ==========================================
-  # 2. SERVICIOS
-  # ==========================================
   mysql-servicios:
     image: mysql:8.0
     container_name: mysql-servicios
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clinica_servicios
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
     ports:
       - "3307:3306"
-      
-  ms-servicios:
-    build:
-      context: ./ms-servicios
-    container_name: ms-servicios
-    restart: always
-    depends_on:
-      - mysql-servicios
-    ports:
-      - "8091:8091"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-servicios:3306/clinica_servicios?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
+    volumes:
+      - mysql_servicios_data:/var/lib/mysql
+    networks:
+      - hospital-net
 
-  # ==========================================
-  # 3. PROFESIONALES
-  # ==========================================
   mysql-profesionales:
     image: mysql:8.0
     container_name: mysql-profesionales
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clinica_profesionales
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
     ports:
       - "3308:3306"
+    volumes:
+      - mysql_profesionales_data:/var/lib/mysql
+    networks:
+      - hospital-net
 
-  ms-profesionales:
-    build:
-      context: ./ms-profesionales
-    container_name: ms-profesionales
-    restart: always
-    depends_on:
-      - mysql-profesionales
-    ports:
-      - "8092:8092"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-profesionales:3306/clinica_profesionales?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
-
-  # ==========================================
-  # 4. INVENTARIO
-  # ==========================================
   mysql-inventario:
     image: mysql:8.0
     container_name: mysql-inventario
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clinica_inventario
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
     ports:
       - "3309:3306"
+    volumes:
+      - mysql_inventario_data:/var/lib/mysql
+    networks:
+      - hospital-net
 
-  ms-inventario:
-    build:
-      context: ./ms-inventario
-    container_name: ms-inventario
-    restart: always
-    depends_on:
-      - mysql-inventario
-    ports:
-      - "8093:8093"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-inventario:3306/clinica_inventario?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
-
-  # ==========================================
-  # 5. FICHAS
-  # ==========================================
   mysql-fichas:
     image: mysql:8.0
     container_name: mysql-fichas
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clinica_fichas
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
     ports:
       - "3310:3306"
+    volumes:
+      - mysql_fichas_data:/var/lib/mysql
+    networks:
+      - hospital-net
 
-  ms-fichas:
-    build:
-      context: ./ms-fichas
-    container_name: ms-fichas
-    restart: always
-    depends_on:
-      - mysql-fichas
-      - ms-paciente
-    ports:
-      - "8094:8094"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-fichas:3306/clinica_fichas?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
-
-  # ==========================================
-  # 6. PACIENTE 
-  # ==========================================
   mysql-paciente:
     image: mysql:8.0
     container_name: mysql-paciente
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clinica_pacientes
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
     ports:
       - "3311:3306"
+    volumes:
+      - mysql_paciente_data:/var/lib/mysql
+    networks:
+      - hospital-net
 
-  ms-paciente:
-    build:
-      context: ./ms.paciente
-    container_name: ms-paciente
-    restart: always
-    depends_on:
-      - mysql-paciente
-    ports:
-      - "8095:8095"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-paciente:3306/clinica_pacientes?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
-
-  # ==========================================
-  # 7. USUARIO 
-  # ==========================================
   mysql-usuario:
     image: mysql:8.0
     container_name: mysql-usuarios
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clinica_usuarios
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
     ports:
       - "3312:3306"
+    volumes:
+      - mysql_usuarios_data:/var/lib/mysql
+    networks:
+      - hospital-net
 
-  ms-usuario:
-    build:
-      context: ./ms.usuarios
-    container_name: ms-usuario
-    restart: always
-    depends_on:
-      - mysql-usuario
-    ports:
-      - "8096:8096"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-usuario:3306/clinica_usuarios?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
-
-  # ==========================================
-  # 8. AGENDA 
-  # ==========================================
   mysql-agenda:
     image: mysql:8.0
     container_name: mysql-agenda
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clinica_agenda
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
     ports:
       - "3313:3306"
+    volumes:
+      - mysql_agenda_data:/var/lib/mysql
+    networks:
+      - hospital-net
 
-  ms-agenda:
-    build:
-      context: ./agenda
-    container_name: ms-agenda
-    restart: always
-    depends_on:
-      - mysql-agenda
-      - ms-paciente
-      - ms-profesionales
-    ports:
-      - "8081:8081"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-agenda:3306/clinica_agenda?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
-
-  # ==========================================
-  # 9. CONSULTAS 
-  # ==========================================
   mysql-consultas:
     image: mysql:8.0
     container_name: mysql-consultas
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clinica_consultas
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
     ports:
       - "3314:3306"
+    volumes:
+      - mysql_consultas_data:/var/lib/mysql
+    networks:
+      - hospital-net
 
-  ms-consultas:
-    build:
-      context: ./ms.consultas
-    container_name: ms-consultas
-    restart: always
-    depends_on:
-      - mysql-consultas
-      - ms-paciente
-      - ms-profesionales
-    ports:
-      - "8098:8098"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-consultas:3306/clinica_consultas?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
-
-  # ==========================================
-  # 10. PAGOS 
-  # ==========================================
   mysql-pagos:
     image: mysql:8.0
     container_name: mysql-pagos
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clinica_pagos
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
     ports:
       - "3315:3306"
+    volumes:
+      - mysql_pagos_data:/var/lib/mysql
+    networks:
+      - hospital-net
 
+  # ==========================================
+  # MICROSERVICIOS DE SALUD
+  # ==========================================
+  
+  # 1. AUTH
+  ms-auth:
+    build:
+      context: ./ms-auth
+      dockerfile: Dockerfile
+    container_name: ms-auth
+    restart: always
+    depends_on:
+      - mysql-auth
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-auth:3306/clinica_auth?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8090:8090"
+    networks:
+      - hospital-net
+
+  # 2. SERVICIOS CLÍNICOS
+  ms-servicios:
+    build:
+      context: ./ms-servicios
+      dockerfile: Dockerfile
+    container_name: ms-servicios
+    restart: always
+    depends_on:
+      - mysql-servicios
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-servicios:3306/clinica_servicios?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8091:8091"
+    networks:
+      - hospital-net
+
+  # 3. PROFESIONALES
+  ms-profesionales:
+    build:
+      context: ./ms-profesionales
+      dockerfile: Dockerfile
+    container_name: ms-profesionales
+    restart: always
+    depends_on:
+      - mysql-profesionales
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-profesionales:3306/clinica_profesionales?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8092:8092"
+    networks:
+      - hospital-net
+
+  # 4. INVENTARIO
+  ms-inventario:
+    build:
+      context: ./ms-inventario
+      dockerfile: Dockerfile
+    container_name: ms-inventario
+    restart: always
+    depends_on:
+      - mysql-inventario
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-inventario:3306/clinica_inventario?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8093:8093"
+    networks:
+      - hospital-net
+
+  # 5. FICHAS MÉDICAS
+  ms-fichas:
+    build:
+      context: ./ms-fichas
+      dockerfile: Dockerfile
+    container_name: ms-fichas
+    restart: always
+    depends_on:
+      - mysql-fichas
+      - ms-paciente
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-fichas:3306/clinica_fichas?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8094:8094"
+    networks:
+      - hospital-net
+
+  # 6. PACIENTES
+  ms-paciente:
+    build:
+      context: ./ms.paciente
+      dockerfile: Dockerfile
+    container_name: ms-paciente
+    restart: always
+    depends_on:
+      - mysql-paciente
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-paciente:3306/clinica_pacientes?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8095:8095"
+    networks:
+      - hospital-net
+
+  # 7. USUARIOS SYSTEMA
+  ms-usuario:
+    build:
+      context: ./ms.usuarios
+      dockerfile: Dockerfile
+    container_name: ms-usuario
+    restart: always
+    depends_on:
+      - mysql-usuario
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-usuario:3306/clinica_usuarios?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8096:8096"
+    networks:
+      - hospital-net
+
+  # 8. AGENDA DE CITAS
+  ms-agenda:
+    build:
+      context: ./agenda
+      dockerfile: dockerfile
+    container_name: ms-agenda
+    restart: always
+    depends_on:
+      - mysql-agenda
+      - ms-paciente
+      - ms-profesionales
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-agenda:3306/clinica_agenda?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8081:8081"
+    networks:
+      - hospital-net
+
+  # 9. CONSULTAS MÉDICAS
+  ms-consultas:
+    build:
+      context: ./ms.consultas
+      dockerfile: Dockerfile
+    container_name: ms-consultas
+    restart: always
+    depends_on:
+      - mysql-consultas
+      - ms-paciente
+      - ms-profesionales
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-consultas:3306/clinica_consultas?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8098:8098"
+    networks:
+      - hospital-net
+
+  # 10. PAGOS / RECAUDACIONES
   ms-pagos:
     build:
       context: ./ms.pagos
+      dockerfile: Dockerfile
     container_name: ms-pagos
     restart: always
     depends_on:
       - mysql-pagos
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-pagos:3306/clinica_pagos?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
     ports:
       - "8099:8099"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-pagos:3306/clinica_pagos?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - hospital-net
+
+# ==========================================
+# VOLÚMENES Y REDES CENTRALIZADAS
+# ==========================================
+volumes:
+  mysql_auth_data:
+  mysql_servicios_data:
+  mysql_profesionales_data:
+  mysql_inventario_data:
+  mysql_fichas_data:
+  mysql_paciente_data:
+  mysql_usuarios_data:
+  mysql_agenda_data:
+  mysql_consultas_data:
+  mysql_pagos_data:
+
+networks:
+  hospital-net:
+    driver: bridge

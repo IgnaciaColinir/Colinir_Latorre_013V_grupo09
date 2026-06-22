@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hospital VM - API Gateway Swagger</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.21.0/swagger-ui.css">
+  <style>
+    body {
+      margin: 0;
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .topbar {
+      background: linear-gradient(135deg, #0b1220, #111827);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+      padding: 16px 20px;
+    }
+
+    .topbar h1 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #38bdf8; /* Tono celeste médico/tecnológico */
+    }
+
+    .topbar p {
+      margin: 0;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    #swagger-ui {
+      background: #fff;
+      min-height: calc(100vh - 76px);
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <h1>Hospital VM - Documentación Centralizada de APIs</h1>
+    <p>Gateway: http://localhost:8080/swagger-ui.html | Eureka: http://localhost:8761</p>
+  </header>
+  <div id="swagger-ui"></div>
+
+  <script src="https://unpkg.com/swagger-ui-dist@5.21.0/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5.21.0/swagger-ui-standalone-preset.js"></script>
+  <script>
+    window.onload = function () {
+      window.ui = SwaggerUIBundle({
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        displayOperationId: false,
+        displayRequestDuration: true,
+        docExpansion: 'list',
+        filter: true,
+        presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+        layout: 'StandaloneLayout',
+        urls: [
+          { name: 'ms-auth', url: '/api-docs/ms-auth' },
+          { name: 'ms-usuarios', url: '/api-docs/ms-usuarios' },
+          { name: 'ms-paciente', url: '/api-docs/ms-paciente' },
+          { name: 'ms-profesionales', url: '/api-docs/ms-profesionales' },
+          { name: 'agenda', url: '/api-docs/agenda' },
+          { name: 'ms-consultas', url: '/api-docs/ms-consultas' },
+          { name: 'ms-fichas', url: '/api-docs/ms-fichas' },
+          { name: 'ms-servicios', url: '/api-docs/ms-servicios' },
+          { name: 'ms-inventario', url: '/api-docs/ms-inventario' },
+          { name: 'ms-pagos', url: '/api-docs/ms-pagos' }
+        ],
+        urlsPrimaryName: 'ms-auth',
+        tryItOutEnabled: true
+      });
+    };
+  </script>
+</body>
+</html>

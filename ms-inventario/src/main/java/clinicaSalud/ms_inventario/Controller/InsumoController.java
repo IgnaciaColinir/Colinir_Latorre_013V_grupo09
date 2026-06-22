@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/api/v1/insumos") 
+@RequestMapping("/api/v1/inventario") 
 @Tag(name = "Inventario", description = "Operaciones relacionadas con el stock de insumos")
 public class InsumoController {
 
