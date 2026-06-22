@@ -1,0 +1,2 @@
+INSERT INTO insumo (nombre, categoria, stock_actual, stock_minimo) VALUES ('Mascarillas Quirúrgicas', 'Insumo Médico', 500, 100);
+INSERT INTO insumo (nombre, categoria, stock_actual, stock_minimo) VALUES ('Jeringas 5ml', 'Material Estéril', 200, 50);

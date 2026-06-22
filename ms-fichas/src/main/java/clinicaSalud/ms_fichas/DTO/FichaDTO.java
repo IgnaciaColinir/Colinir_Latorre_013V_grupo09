@@ -1,24 +1,22 @@
 package clinicaSalud.ms_fichas.DTO;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class FichaDTO {
     private Long idFicha;
+    
+    @NotBlank(message = "El RUT del paciente es obligatorio")
     private String rutPaciente;
+    
+    @NotBlank(message = "El tipo de sangre es obligatorio")
     private String tipoSangre;
+    
     private String alergias;
+    
+    @NotBlank(message = "Los antecedentes familiares son obligatorios")
     private String antecedentesFamiliares;
 
-    // Agrega esto a tus otras variables en FichaDTO.java
-private Object paciente;
-
-public Object getPaciente() {
-    return paciente;
+    private Object paciente;
 }
-
-public void setPaciente(Object paciente) {
-    this.paciente = paciente;
-}
-}
-

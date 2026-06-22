@@ -34,9 +34,9 @@ public class ProfesionalControllerTest {
     @MockBean
     private ServicesProfesional servicesProfesional;
 
-    // Mockeamos la seguridad
     @MockBean
     private JwtFilter jwtFilter;
+    
     @MockBean
     private JwtUtil jwtUtil;
 
@@ -73,7 +73,7 @@ public class ProfesionalControllerTest {
         mockMvc.perform(post("/api/v1/profesionales")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestDTO)))
-                .andExpect(status().isCreated()) // 201 Created
+                .andExpect(status().isCreated()) 
                 .andExpect(jsonPath("$.nombre").value("Juan"))
                 .andExpect(jsonPath("$.especialidad").value("Cardiología"));
     }

@@ -2,7 +2,7 @@ package clinicaSalud.ms_servicios.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,27 +38,23 @@ public class ServicioService {
     }
 
     public List<ServicioDTO> listarTodo() {
-        List<Servicio> servicios = repository.findAll();
-        List<ServicioDTO> dtos = new ArrayList<>();
-        for (Servicio s : servicios) {
-            dtos.add(convertirADto(s));
-        }
-        return dtos;
+        return repository.findAll().stream()
+                .map(this::convertirADto)
+                .collect(Collectors.toList());
     }
 
     public ServicioDTO guardar(ServicioDTO dto) {
-        if (dto.getPrecio() <= 0) {
-            throw new RuntimeException("Error: El precio del servicio médico debe ser mayor a $0.");
+        // Regla de negocio: El precio no puede ser negativo
+        if (dto.getPrecio() < 0) {
+            throw new IllegalArgumentException("Error: El precio no puede ser negativo");
         }
         Servicio guardado = repository.save(convertirAModel(dto));
         return convertirADto(guardado);
     }
 
     public ServicioDTO obtenerPorId(Long id) {
-        Optional<Servicio> servicio = repository.findById(id);
-        if (servicio.isEmpty()) {
-            throw new RuntimeException("Atención: El servicio con ID " + id + " no existe en nuestros registros.");
-        }
-        return convertirADto(servicio.get());
+        Servicio servicio = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Atención: El servicio con ID " + id + " no existe en nuestros registros."));
+        return convertirADto(servicio);
     }
 }

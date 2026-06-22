@@ -3,12 +3,10 @@ package clinicaSalud.ms_inventario.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import clinicaSalud.ms_inventario.DTO.InsumoDTO;
 import clinicaSalud.ms_inventario.Service.InsumoService;
@@ -30,13 +28,13 @@ public class InsumoController {
 
     @Operation(summary = "Crear Insumo", description = "Registra un nuevo insumo validando que el stock no sea negativo")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Insumo creado exitosamente", 
+        @ApiResponse(responseCode = "201", description = "Insumo creado exitosamente", 
                      content = @Content(schema = @Schema(implementation = InsumoDTO.class))),
-        @ApiResponse(responseCode = "500", description = "Error de validación (ej. Stock negativo)", content = @Content)
+        @ApiResponse(responseCode = "400", description = "Error de validación (ej. Stock negativo)", content = @Content)
     })
     @PostMapping
-    public ResponseEntity<InsumoDTO> crearInsumo(@RequestBody InsumoDTO insumoDTO) {
-        return ResponseEntity.ok(service.guardar(insumoDTO));
+    public ResponseEntity<InsumoDTO> crearInsumo(@Valid @RequestBody InsumoDTO insumoDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.guardar(insumoDTO));
     }
 
     @Operation(summary = "Obtener Todos", description = "Lista todos los insumos registrados en el inventario")

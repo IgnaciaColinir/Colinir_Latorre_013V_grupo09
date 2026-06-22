@@ -52,17 +52,19 @@ public class InsumoControllerTest {
         dto = new InsumoDTO();
         dto.setIdInsumo(1L);
         dto.setNombre("Gasa");
+        dto.setCategoria("Insumo Médico");
         dto.setStockActual(10);
+        dto.setStockMinimo(5);
     }
 
     @Test
-    void crearInsumo_RetornaOk() throws Exception {
+    void crearInsumo_RetornaCreated() throws Exception {
         when(insumoService.guardar(any(InsumoDTO.class))).thenReturn(dto);
 
         mockMvc.perform(post("/api/v1/insumos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.nombre").value("Gasa"));
     }
 

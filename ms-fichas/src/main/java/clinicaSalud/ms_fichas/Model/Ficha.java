@@ -1,20 +1,15 @@
 package clinicaSalud.ms_fichas.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 import lombok.Data;
 
 @Data
-@Entity
+@Table("ficha") // Modo JDBC, cero JPA
 public class Ficha {
-    
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idFicha;
-    
-    private String rutPaciente; // La clave para conectarlo con el ms de la Nacha
+    private String rutPaciente;
     private String tipoSangre;
     private String alergias;
     private String antecedentesFamiliares;

@@ -1,0 +1,2 @@
+INSERT INTO ficha (rut_paciente, tipo_sangre, alergias, antecedentes_familiares) VALUES ('19876543-2', 'O+', 'Penicilina', 'Hipertensión');
+INSERT INTO ficha (rut_paciente, tipo_sangre, alergias, antecedentes_familiares) VALUES ('00000900-T', 'A-', 'Ibuprofeno', 'Paciente Tony Hawk: Fractura de fémur múltiple...');

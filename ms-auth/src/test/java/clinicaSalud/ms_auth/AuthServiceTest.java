@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,18 +40,56 @@ public class AuthServiceTest {
         request.setPassword("1234");
 
         usuarioDB = new Usuario();
+        usuarioDB.setId(1L);
         usuarioDB.setUsername("test");
         usuarioDB.setPassword("1234");
+        usuarioDB.setRol("PACIENTE");
     }
 
     @Test
-    void login_Exitoso() {
+    void testLogin_Exitoso() {
         when(repository.findByUsername("test")).thenReturn(Optional.of(usuarioDB));
-        when(jwtUtil.generateToken("test")).thenReturn("token123");
+        when(jwtUtil.generateToken("test")).thenReturn("token_falso_123");
 
-        String res = authService.login(request);
+        String result = authService.login(request);
 
-        assertEquals("token123", res);
+        assertEquals("token_falso_123", result);
         verify(repository, times(1)).findByUsername("test");
+    }
+
+    @Test
+    void testLogin_Fallo_UsuarioNoExiste() {
+        when(repository.findByUsername("invalido")).thenReturn(Optional.empty());
+        request.setUsername("invalido");
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            authService.login(request);
+        });
+
+        assertEquals("Error: Credenciales incorrectas.", exception.getMessage());
+    }
+
+    @Test
+    void testLogin_Fallo_PasswordIncorrecto() {
+        when(repository.findByUsername("test")).thenReturn(Optional.of(usuarioDB));
+        request.setPassword("claveMala");
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            authService.login(request);
+        });
+
+        assertEquals("Error: Credenciales incorrectas.", exception.getMessage());
+    }
+
+    @Test
+    void testRegistrar_Exitoso() {
+        when(repository.findByUsername("nuevo_user")).thenReturn(Optional.empty());
+        when(repository.save(any(Usuario.class))).thenReturn(usuarioDB);
+
+        request.setUsername("nuevo_user");
+        String result = authService.registrar(request);
+
+        assertEquals("Usuario registrado correctamente.", result);
+        verify(repository, times(1)).save(any(Usuario.class));
     }
 }
