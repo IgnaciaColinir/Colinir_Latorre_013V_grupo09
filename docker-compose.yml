@@ -335,7 +335,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: admin123
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
     ports:
-      - "8096:8096"
+      - "8086:8086"
     networks:
       - hospital-net
 
@@ -343,7 +343,7 @@ services:
   ms-agenda:
     build:
       context: ./agenda
-      dockerfile: dockerfile
+      dockerfile: Dockerfile
     container_name: ms-agenda
     restart: always
     depends_on:
@@ -357,7 +357,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: admin123
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
     ports:
-      - "8081:8081"
+      - "8097:8081"
     networks:
       - hospital-net
 

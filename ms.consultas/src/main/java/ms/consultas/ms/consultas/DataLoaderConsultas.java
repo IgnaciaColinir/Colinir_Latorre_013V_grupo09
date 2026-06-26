@@ -18,8 +18,8 @@ import ms.consultas.ms.consultas.dto.response.PacienteResponse;
 import ms.consultas.ms.consultas.dto.response.ProfesionalResponse;
 import net.datafaker.Faker;
 
-@Profile("dev")
-@Component
+//@Profile("dev")
+//@Component
 public class DataLoaderConsultas implements CommandLineRunner {
     @Autowired
     private ConsultaRepository consultaRepository;

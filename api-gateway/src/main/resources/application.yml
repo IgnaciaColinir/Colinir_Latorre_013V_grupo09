@@ -1,5 +1,5 @@
 server:
-  port: 8000
+  port: 8080
 
 spring:
   application:
@@ -22,59 +22,22 @@ spring:
             allowCredentials: false
       discovery:
         locator:
-<<<<<<< HEAD
-          enabled: true # Habilita la localización dinámica por Eureka
-      
-      # ---------------------------------------------------
-      # ENRUTAMIENTO DE TODOS TUS MICROSERVICIOS DE SALUD
-      # ---------------------------------------------------
-=======
           enabled: true
           lower-case-service-id: true
->>>>>>> 54118e7184447169b450c5f26f1898eadac926da
       routes:
         # 1. MS-AUTH
         - id: ms-auth
           uri: lb://ms-auth
           predicates:
             - Path=/api/v1/auth/**
-<<<<<<< HEAD
 
         # 2. MS-USUARIOS
         - id: ms-usuarios
           uri: lb://ms-usuarios
-=======
-            
-        # 2. MS-SERVICIOS
-        - id: ms-servicios
-          uri: lb://ms-servicios
-          predicates:
-            - Path=/api/v1/servicios/**
-
-        # 3. MS-PROFESIONALES
-        - id: ms-profesionales
-          uri: lb://ms-profesionales
->>>>>>> 54118e7184447169b450c5f26f1898eadac926da
           predicates:
             - Path=/api/v1/usuarios/**
 
-<<<<<<< HEAD
         # 3. MS-PACIENTE
-=======
-        # 4. MS-INVENTARIO
-        - id: ms-inventario
-          uri: lb://ms-inventario
-          predicates:
-            - Path=/api/v1/insumos/**
-
-        # 5. MS-FICHAS
-        - id: ms-fichas
-          uri: lb://ms-fichas
-          predicates:
-            - Path=/api/v1/fichas/**
-            
-        # 6. MS-PACIENTE (Ignacia)
->>>>>>> 54118e7184447169b450c5f26f1898eadac926da
         - id: ms-paciente
           uri: lb://ms-paciente
           predicates:
@@ -110,7 +73,7 @@ spring:
           predicates:
             - Path=/api/v1/servicios/**
 
-        # 9. MS-INVENTARIO
+        # 9. MS-INVENTARIO (Mapea a /api/v1/inventario/**)
         - id: ms-inventario
           uri: lb://ms-inventario
           predicates:
@@ -121,16 +84,6 @@ spring:
           uri: lb://ms-pagos
           predicates:
             - Path=/api/v1/pagos/**
-
-        # ---------------------------------------------------
-        # RUTAS DINÁMICAS PARA AGREGAR SWAGGER/OPENAPI DOCS
-        # ---------------------------------------------------
-        - id: openapi-docs
-          uri: lb://
-          predicates:
-            - Path=/api-docs/**
-          filters:
-            - SetPath=/v3/api-docs
 
 eureka:
   client:
@@ -150,7 +103,7 @@ management:
         enabled: true
 
 # ---------------------------------------------------
-# AGREGACIÓN CENTRALIZADA DE SWAGGER UI
+# CONFIGURACIÓN CORREGIDA PARA LAS EXIGENCIAS DEL PROFESOR
 # ---------------------------------------------------
 springdoc:
   api-docs:
@@ -158,7 +111,6 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     disable-swagger-default-url: true
-    urls-primary-name: ms-auth
     urls:
       - name: ms-auth
         url: /api-docs/ms-auth

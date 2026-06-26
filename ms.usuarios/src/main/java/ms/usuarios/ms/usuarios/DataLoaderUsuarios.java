@@ -13,8 +13,8 @@ import ms.usuarios.ms.usuarios.Model.ModeloUsuario;
 import ms.usuarios.ms.usuarios.Repository.RepositoryUsuarios;
 import net.datafaker.Faker;
 
-@Profile("dev")
-@Component
+//@Profile("dev")
+//@Component
 public class DataLoaderUsuarios implements CommandLineRunner {
 
     @Autowired

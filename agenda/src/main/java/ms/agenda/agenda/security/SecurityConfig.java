@@ -28,6 +28,7 @@ public class SecurityConfig {
                         //esta es la lista de endpoints privados
                         .requestMatchers("/api/v1/agenda/**").permitAll()
                         .requestMatchers("/api/v1/agenda/disponibilidad/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

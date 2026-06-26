@@ -18,8 +18,8 @@ import ms.agenda.agenda.dto.response.PacienteResponse;
 import ms.agenda.agenda.dto.response.ProfesionalResponse;
 import net.datafaker.Faker;
 
-@Profile("dev")
-@Component
+//@Profile("dev")
+//@Component
 public class DataLoaderAgenda implements CommandLineRunner {
     @Autowired
     private RepositoryAgenda agendaRepository;

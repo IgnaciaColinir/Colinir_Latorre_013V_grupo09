@@ -17,8 +17,8 @@ import ms.pagos.ms.pagos.dto.response.ConsultasResponse;
 import ms.pagos.ms.pagos.dto.response.PacienteResponse;
 import net.datafaker.Faker;
 
-@Profile("dev")
-@Component
+//@Profile("dev")
+//@Component
 public class DataLoaderPagos implements CommandLineRunner{
     @Autowired
     private RepositoryPago pagoRepository;

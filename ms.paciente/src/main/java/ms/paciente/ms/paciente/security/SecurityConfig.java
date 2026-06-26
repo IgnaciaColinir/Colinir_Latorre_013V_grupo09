@@ -24,11 +24,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        //esta es la lista de endpoints que sepueden usar sin token
-                        .requestMatchers(HttpMethod.POST,"/api/v1/pacientes").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/pacientes/rut/{rut}").permitAll()
-                        //esta es la lista de endpoints privados
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(
                         jwtAuthenticationFilter,

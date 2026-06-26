@@ -31,6 +31,7 @@ public class SecurityConfig {
                         //esta es la lista de endpoints que sepueden usar sin token
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/api/v1/pagos", "/api/v1/pagos/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         //esta es la lista de endpoints privados
                         .anyRequest().authenticated()
                 )

@@ -104,20 +104,9 @@
 		</dependency>
 
 		<!-- PASO GUIA 3.1.7: Dependencia de Mockito para crear mocks en pruebas unitarias -->
-		<!-- Mockito ya viene incluido dentro de spring-boot-starter-test, pero se puede declarar explicitamente -->
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-
+		
 		<!-- PASO GUIA 3.1.7: Motor de JUnit 5 para ejecutar pruebas unitarias -->
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<scope>test</scope>
-		</dependency>
-
+		
 		<!-- PASO GUIA 3.1.7: Base de datos H2 embebida para ejecutar tests sin necesidad de MySQL -->
 		<!-- H2 se activa solo en el scope 'test'. Permite que las pruebas unitarias -->
 		<!-- corran en cualquier maquina sin instalar ni configurar un servidor MySQL. -->
@@ -147,6 +136,23 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-mysql</artifactId>
+		</dependency>
+
+
 
 		
 	</dependencies>

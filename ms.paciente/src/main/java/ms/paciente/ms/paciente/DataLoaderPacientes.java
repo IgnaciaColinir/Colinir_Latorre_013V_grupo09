@@ -12,8 +12,8 @@ import ms.paciente.ms.paciente.Model.ModeloPaciente;
 import ms.paciente.ms.paciente.Repository.RepositoryPacientes;
 import net.datafaker.Faker;
 
-@Profile("dev")
-@Component
+//@Profile("dev")
+//@Component
 public class DataLoaderPacientes implements CommandLineRunner {
     @Autowired
     private RepositoryPacientes pacienteRepository;
